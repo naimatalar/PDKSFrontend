@@ -1,0 +1,156 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.firm-detail-box-field {
+  font-size: 14px;
+  border-bottom: 2px dashed #32414873;
+  padding-bottom: 6px;
+  padding-top: 6px;
+  background: #26a69a2b;
+}
+
+.firm-detail-box {
+  box-shadow: 1px 17px 26px -9px black;
+  padding: 18px;
+}
+
+.nav-item a {
+  cursor: pointer;
+}
+
+.property-tab-ad .nav-link {
+  padding: 0.40rem 0.70rem;
+
+  color: #000;
+  background-color: #e6e6e6;
+  border-color: #ddd #ddd #fff;
+}
+
+.property-tab-ad .nav-item .active {
+  background: #263238 !important;
+  color: white !important;
+}
+
+.input-value-label {
+  position: absolute;
+  display: block;
+  width: 100%;
+  background: white;
+  left: 0;
+}
+
+.hide-value-key {
+  display: none !important;
+}
+
+.label-title-check {
+  font-weight: bold;
+  font-size: 17px;
+
+  margin-bottom: 15px;
+  padding: 10px 1px 10px 5px !important;
+}
+
+.labelGroup {
+  border: 1px solid #727272;
+
+}
+
+.switch-label {
+
+  margin-bottom: 6px;
+  margin-left: 4px;
+  font-weight: bold !important;
+}
+
+.cl-both {
+  clear: both;
+}
+
+.faq-ansver-textarea {
+  background: #e5f7ff !important;
+  border: 1px solid #5284e2 !important;
+}
+
+.faq-question-textarea {
+  background: #e5ffeb !important;
+  border: 1px solid #047009 !important;
+}
+
+.delete-image-button {
+  color: red;
+  border: 1px solid red;
+  background: #fcfcfc;
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  width: 51px;
+  height: 29px;
+  border-radius: 8px;
+  display: none;
+}
+
+.image-content:hover .delete-image-button {
+  display: block;
+  cursor: pointer;
+}
+
+.bb-index-cat {
+  background-color: #f6f6f6;
+  margin: 11px;
+  border: 1px solid #a1a1a1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bb-index-name {
+  color: #f9f9f9;
+  background: #758dff;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.bb-index-delete {
+  position: absolute;
+  top: 5px;
+  background: rgb(236, 73, 73);
+  color: white;
+  width: 40px;
+  padding: 5px;
+  border: 1px solid rgb(194, 21, 21);
+  right: 5px;
+  z-index: 5;
+  border-radius: 5px;
+}
+.bb-index-discount-w{
+  position: absolute;
+  z-index: 9;
+  background-color: rgb(111, 59, 255);
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  top:5px;
+  width: 45px;
+  text-align: center;
+  border-radius: 5px;
+  border:1px solid rgb(53, 0, 245)
+}

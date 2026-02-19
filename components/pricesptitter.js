@@ -1,0 +1,1 @@
+export  const PriceSplitter = (number) => (number && number.replace(/\./g, "").toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
