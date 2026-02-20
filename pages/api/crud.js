@@ -13,19 +13,19 @@ const masterUrl = apiConstant + "/api/";
 export const fileUploadUrl = apiConstant + "/root/Upload/";
 export const imageUploadUrl = apiConstant + "/root/UploadedImages/";
 export const fileRoot = apiConstant + "/root/";
-export const GetWithToken = async (url) => {
-    const headers =
-    {
+export const GetWithToken = async (url, params) => {
+    const config = {
         headers: {
             'Content-Type': 'application/Json',
             Authorization: 'Bearer ' + localStorage.getItem("dgbrdconftknserr")
         }
     }
+    if (params) config.params = params
     try {
-        return Axios.get(masterUrl + url, headers)
+        return Axios.get(masterUrl + url, config)
+
     } catch (error) {
         alert("hata oluştu n/ " + error)
-
     }
 }
 

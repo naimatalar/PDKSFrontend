@@ -1,0 +1,283 @@
+/**
+ * PDKS DataTable - Profesyonel Görünüm
+ */
+
+/* ===== Ana Container ===== */
+.datatable-pro {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.datatable-pro .datatable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.datatable-pro .datatable-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.datatable-pro .datatable-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(14, 165, 233, 0.3);
+}
+
+.datatable-pro .datatable-header-btn:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+}
+
+/* ===== Description ===== */
+.datatable-pro .datatable-description {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  background: #fafafa;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* ===== Table Wrapper ===== */
+.datatable-pro .datatable-table-wrap {
+  overflow-x: auto;
+}
+
+/* ===== Table ===== */
+.datatable-pro .datatable-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.datatable-pro .datatable-table thead th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.datatable-pro .datatable-table thead th:last-child {
+  text-align: center;
+}
+
+.datatable-pro .datatable-table tbody td {
+  padding: 0.875rem 1rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.datatable-pro .datatable-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.datatable-pro .datatable-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.datatable-pro .datatable-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Empty cell styling */
+.datatable-pro .datatable-table tbody td .empty-cell {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* ===== İşlemler Hücresi ===== */
+.datatable-pro .datatable-actions-cell {
+  text-align: center;
+  width: 100px;
+}
+
+.datatable-pro .datatable-actions-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px;
+  color: #64748b !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.datatable-pro .datatable-actions-toggle:hover {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+.datatable-pro .dropdown-menu {
+  padding: 0.5rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e2e8f0;
+}
+
+.datatable-pro .dropdown-menu .btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  margin-bottom: 0.25rem;
+  transition: all 0.15s ease;
+}
+
+.datatable-pro .dropdown-menu .btn:last-child {
+  margin-bottom: 0;
+}
+
+.datatable-pro .dropdown-menu .btn-outline-danger {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.datatable-pro .dropdown-menu .btn-outline-danger:hover {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.datatable-pro .dropdown-menu .btn-outline-success {
+  color: #16a34a;
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.datatable-pro .dropdown-menu .btn-outline-success:hover {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+}
+
+/* ===== Boş Veri ===== */
+.datatable-pro .datatable-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.datatable-pro .datatable-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+
+/* ===== Pagination ===== */
+.datatable-pro .datatable-pagination-wrap {
+  padding: 1rem 1.25rem;
+  background: #fafafa;
+  border-top: 1px solid #f1f5f9;
+}
+
+.datatable-pro .pager-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.datatable-pro .pager-base li {
+  margin: 0;
+}
+
+.datatable-pro .pager-base li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.datatable-pro .pager-base li a:hover {
+  background: #f1f5f9;
+  color: #0ea5e9;
+  border-color: #bae6fd;
+}
+
+.datatable-pro .pager-base li.selected a,
+.datatable-pro .pager-base li.active a {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #fff;
+  border-color: #0ea5e9;
+}
+
+.datatable-pro .pager-base .previous a,
+.datatable-pro .pager-base .next a {
+  min-width: 90px;
+  gap: 0.35rem;
+}
+
+.datatable-pro .pager-base .previous.disabled a,
+.datatable-pro .pager-base .next.disabled a {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.datatable-pro .pager-base .break a {
+  cursor: default;
+  border-color: transparent;
+}
+
+.datatable-pro .pager-base .break a:hover {
+  background: transparent;
+  color: #64748b;
+  border-color: transparent;
+}
+
+/* ===== price-table-view (nested items) ===== */
+.datatable-pro .price-table-view {
+  padding: 0.2rem 0;
+  font-size: 0.875rem;
+}

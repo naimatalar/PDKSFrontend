@@ -165,22 +165,21 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
                     <li key={key} className={"nav-item " + (subItems.length > 0 ? "nav-item-submenu" : "") + (pagePath.includes(currentUrl.split("/")[currentUrl.split("/").length - 1]) ? " nav-item-expanded nav-item-open" : "")}>
                         {subItems.length > 0 ? (
                             <>
-
-                                <a href={currentUrl} className={"nav-link " + (pagePath.includes(currentUrl) ? "active" : "")} style={{ borderBottom: "1px solid #cccccc" }}>
+                                <a href={currentUrl} className={"nav-link " + (pagePath.includes(currentUrl) ? "active" : "")}>
                                     {currentUrl.split("/").length > 1 && <div className='wwd'></div>}
-                                    <i className="fa fa-caret-right" style={{ marginRight: 5, fontSize: 13 }}></i>
-                                    <span style={{ fontSize: 11 }}>{item.pageName}</span>
+                                    <i className={item.iconName}></i>
+                                    <span>{item.pageName}</span>
                                 </a>
                                 <ul className="nav nav-group-sub" data-submenu-title="Sub-items">
-                                    {renderMenuItems(menuList, currentUrl, item.id)} {/* Alt menüler için recursive çağrı */}
+                                    {renderMenuItems(menuList, currentUrl, item.id)}
                                 </ul>
                             </>
                         ) : (
                             <Link href={`/${currentUrl}`}>
                                 <a className={"nav-link " + (pagePath.includes(currentUrl) ? "active" : "")}>
                                     {currentUrl.split("/").length > 1 && <div className='wwd'></div>}
-                                    <i style={{ marginRight: 5, fontSize: 13 }} className='fa fa-caret-right'></i>
-                                    <span className='pl-2' style={{ fontSize: 11 }}> {item.pageName}</span>
+                                    <i className={item.iconName}></i>
+                                    <span>{item.pageName}</span>
                                 </a>
                             </Link>
                         )}
@@ -196,6 +195,7 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
             if (item.parentId == null && item.isMainPage) {
                 return (
                     <li key={key} style={{ borderBottom: 0 }} className={"nav-item nav-item-submenu " + (pagePath.includes(item.pageUrl) && "nav-item-expanded nav-item-open")}>
+                       
                         <a href="#" className="nav-link" style={{ borderBottom: "1px solid #cccccc" }}>
                             <i className="fa fa-caret-right" style={{ marginRight: 5, fontSize: 13 }}></i>
                             <span style={{ fontSize: 11 }}>{item.pageName}</span>
@@ -279,14 +279,11 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
 
             if (item.parentId == null && item.isMainPage == false) {
                 return (
-                    <li className="nav-item " key={key}>
+                    <li className="nav-item" key={key}>
                         <Link href={"/" + item.pageUrl}>
-                            <a className="nav-link">
-                                <i style={{ marginRight: 5, fontSize: 13 }} className="fa fa-caret-right"></i>
-                                <span style={{ fontSize: 11 }}>{item.pageName}
-                                    {item.pageUrl == "dashboard"}
-                                </span>
-                                {/* <span className="badge bg-blue-400 align-self-center ml-auto">2.2</span> */}
+                            <a className={"nav-link " + (pagePath.includes(item.pageUrl) ? "active" : "")}>
+                                <i className={item.iconName || "icon-home4"}></i>
+                                <span>{item.pageName}</span>
                             </a>
                         </Link>
                     </li>
@@ -484,12 +481,12 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
                 <div className="sidebar sidebar-dark sidebar-main sidebar-expand-md">
 
 
-                    <div className="sidebar-mobile-toggler text-center">
-                        <a href="#" className="sidebar-mobile-main-toggle">
+                    <div className="sidebar-mobile-toggler text-center d-flex align-items-center justify-content-between">
+                        <a href="#" className="sidebar-mobile-main-toggle" aria-label="Menüyü kapat">
                             <i className="icon-arrow-left8"></i>
                         </a>
-                        Navigation
-                        <a href="#" className="sidebar-mobile-expand">
+                        <span className="sidebar-nav-label">Menü</span>
+                        <a href="#" className="sidebar-mobile-expand" aria-label="Tam ekran">
                             <i className="icon-screen-full"></i>
                             <i className="icon-screen-normal"></i>
                         </a>

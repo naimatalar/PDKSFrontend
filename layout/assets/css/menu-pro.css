@@ -1,0 +1,249 @@
+/**
+ * PDKS Menü - Profesyonel Görünüm
+ * Sidebar ve navigasyon stilleri
+ */
+
+/* ===== Sidebar Genel ===== */
+.sidebar.sidebar-main {
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.sidebar.sidebar-dark {
+  background: linear-gradient(180deg, #fafbfc 0%, #f5f6f8 100%);
+}
+
+/* ===== Menü Kartı ===== */
+.sidebar .card-sidebar-mobile {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+/* ===== Ana Menü Listesi ===== */
+.nav-sidebar {
+  padding: 0.75rem 0;
+}
+
+.nav-sidebar > .nav-item {
+  margin-bottom: 2px;
+}
+
+.nav-sidebar > .nav-item:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Menü Linkleri ===== */
+.nav-sidebar .nav-link {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  min-height: 42px;
+  align-items: center !important;
+}
+
+.nav-sidebar .nav-link i {
+  width: 22px;
+  text-align: center;
+  margin-right: 12px !important;
+  font-size: 1rem;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.nav-sidebar .nav-link span {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+}
+
+/* Varsayılan metin rengi */
+.sidebar-dark .nav-sidebar .nav-link {
+  color: #4b5563 !important;
+}
+
+/* Hover */
+.nav-sidebar .nav-link:not(.disabled):hover {
+  background: rgba(12, 124, 220, 0.08) !important;
+  color: #0c7cdc !important;
+  border-left-color: rgba(12, 124, 220, 0.4);
+}
+
+.nav-sidebar .nav-link:not(.disabled):hover i {
+  opacity: 1;
+}
+
+/* Active / Open */
+.nav-sidebar .nav-item > .nav-link.active,
+.nav-sidebar .nav-item-open > .nav-link {
+  background: #fff !important;
+  color: #1a365d !important;
+  border-left-color: #0c7cdc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.nav-sidebar .nav-item > .nav-link.active i,
+.nav-sidebar .nav-item-open > .nav-link i {
+  opacity: 1;
+  color: #0c7cdc;
+}
+
+/* ===== Alt Menü (nav-group-sub) ===== */
+.nav-sidebar .nav-group-sub {
+  background: transparent !important;
+  padding: 0.25rem 0;
+  margin: 0.2rem 0 0.4rem 1.5rem;
+  border-radius: 6px;
+  border: none !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-item {
+  margin-bottom: 1px;
+  border: none !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-link {
+  padding: 0.5rem 1rem 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  border: none !important;
+  border-left: none !important;
+  min-height: 38px;
+  color: #6b7280 !important;
+  border-radius: 0 6px 6px 0;
+}
+
+.nav-sidebar .nav-group-sub .nav-link i {
+  width: 18px;
+  font-size: 0.9rem;
+  margin-right: 10px !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-link:not(.disabled):hover {
+  background: rgba(12, 124, 220, 0.06) !important;
+  color: #0c7cdc !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-link.active {
+  background: rgba(12, 124, 220, 0.08) !important;
+  color: #0c7cdc !important;
+}
+
+/* Alt menü child'larında border yok */
+.nav-sidebar .nav-group-sub .nav-item:not(.nav-item-header):not(.nav-item-divider),
+.nav-sidebar .nav-group-sub .nav-group-sub .nav-item {
+  border: none !important;
+  border-bottom: none !important;
+}
+
+/* 3. seviye alt menü */
+.nav-sidebar .nav-group-sub .nav-group-sub {
+  margin: 0.2rem 0 0.2rem 1rem;
+  background: transparent !important;
+  border: none !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-group-sub .nav-item {
+  border: none !important;
+}
+
+.nav-sidebar .nav-group-sub .nav-group-sub .nav-link {
+  padding: 0.4rem 1rem 0.4rem 1rem;
+  font-size: 0.82rem;
+  border: none !important;
+}
+
+/* ===== Submenu Collapse Arrow (sağ tarafta) ===== */
+.nav-item-submenu > .nav-link {
+  padding-right: 2.75rem !important;
+}
+
+.nav-item-submenu > .nav-link:after {
+  content: "\e9dc"; /* icomoon chevron-down - kapalı: aşağı */
+  font-family: "icomoon" !important;
+  display: inline-block;
+  font-size: 0.85rem;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  right: 1.25rem;
+  margin-top: -0.5em;
+  opacity: 0.85;
+  transition: transform 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kapalı: aşağı bakan ok (varsayılan) */
+.nav-item-submenu > .nav-link:after {
+  transform: rotate(0deg);
+}
+
+/* Açık: yukarı bakan ok */
+.nav-item-submenu.nav-item-open > .nav-link:after {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Alt menü içindeki submenu okları */
+.nav-group-sub .nav-item-submenu > .nav-link:after {
+  top: 50%;
+}
+
+/* ===== Mobil Toggler ===== */
+.sidebar-mobile-toggler {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sidebar-nav-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.sidebar-mobile-toggler a {
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem !important;
+}
+
+.sidebar-mobile-toggler a:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ===== Divider / Ayırıcı ===== */
+.nav-sidebar .nav-item-divider {
+  margin: 0.75rem 1.25rem;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08), transparent) !important;
+  height: 1px;
+}
+
+/* ===== Wwd indent (alt menü girintisi) ===== */
+.nav-sidebar .wwd {
+  display: none;
+}
+
+/* Scrollbar styling */
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}

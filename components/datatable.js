@@ -1,14 +1,11 @@
-
 import React, { cloneElement, useEffect, useState } from 'react';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
-
 import { GetWithToken, PostWithToken } from '../pages/api/crud';
 import { confirmAlert } from 'react-confirm-alert';
-// import 'react-confirm-alert/src/react-confirm-alert.css';
 import ReactPaginate from 'react-paginate';
 import { PriceSplitter } from './pricesptitter';
 
-export default function DataTable({ GetAllData, Data, Refresh = null, Title, Description, Headers = [[] || { text: undefined, header: undefined, dynamicButton: undefined, onClick: undefined }], DataUrl, Pagination = undefined, HeaderButton = { text: "", action: (e) => { } }, EditButton = (e) => { }, DeleteButton = (e) => { }, HideButtons = false, NoDataPlaceholder }) {
+export default function DataTable({ GetAllData, Data, Refresh = null, Title, Description, Headers = [[] || { text: undefined, header: undefined, dynamicButton: undefined, onClick: undefined }], DataUrl, Pagination = undefined, UseGetPagination = false, HeaderButton = { text: "", action: (e) => { } }, EditButton = (e) => { }, DeleteButton = (e) => { }, HideButtons = false, NoDataPlaceholder }) {
 
     const [data, setData] = useState(Data)
     const [toggleActions, setToggleActions] = useState({ toggle: false, key: 0 })
@@ -28,8 +25,11 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
 
 
             if (Pagination) {
-                var d = await PostWithToken(DataUrl, Pagination).then(x => { return x.data })
-                setSelectedPage(Pagination.pageNumber)
+                const paginationParams = { PageNumber: Pagination.pageNumber || 1, PageSize: Pagination.pageSize || 20 };
+                const d = UseGetPagination
+                    ? await GetWithToken(DataUrl, paginationParams).then(x => x.data)
+                    : await PostWithToken(DataUrl, Pagination).then(x => x.data);
+                setSelectedPage(paginationParams.PageNumber)
                 setPagination(d.data.totalCount);
                 setData(d.data.list)
                 setLoading(false)
@@ -63,7 +63,10 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
 
         setSelectedPage(data.selected + 1)
         Pagination.pageNumber = data.selected + 1
-        var d = await PostWithToken(DataUrl, Pagination).then(x => { return x.data })
+        const paginationParams = { PageNumber: Pagination.pageNumber, PageSize: Pagination.pageSize || 20 };
+        const d = UseGetPagination
+            ? await GetWithToken(DataUrl, paginationParams).then(x => x.data)
+            : await PostWithToken(DataUrl, Pagination).then(x => x.data);
 
 
         setData(d.data.list)
@@ -88,29 +91,21 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
     }
 
     return (
-        <div className='datatble-comp'>
-            {Title && HeaderButton && <div className="card-header header-elements-inline " style={{
-                padding: "0px",
-                margin: "0 !important",
-                background: "#ededed",
-                border: "1px dashed grey"
-            }}>
-                <h5 className="card-title" style={{ fontSize: 15, fontWeight: "bold", margin: 0 }}>{Title}</h5>
-                <div className="header-elements">
-                    <div className="list-icons">
-                        {HeaderButton.text != "" &&
-                            <button style={{ background: "rgb(38, 166, 154)", padding: 5, fontSize: 12 }} className='btn  btn-info' onClick={HeaderButton.action}><i className='fas fa-plus-circle'></i> <b>{HeaderButton.text}</b> </button>
-
-                        }
-                    </div>
-                </div>
+        <div className='datatable-pro'>
+            {Title && <div className="datatable-header">
+                <h5 className="datatable-title">{Title}</h5>
+                {HeaderButton?.text != "" && (
+                    <button className="datatable-header-btn" onClick={HeaderButton.action}>
+                        <i className='icon-plus22'></i>
+                        <span>{HeaderButton.text}</span>
+                    </button>
+                )}
             </div>}
 
-            {Description && <div className="card-body ccbdy" >
-                {Description}
-            </div>}
+            {Description && <div className="datatable-description">{Description}</div>}
 
-            <table border="1" className="table datatable-basic table-hover " style={{ background: "white" }}>
+            <div className="datatable-table-wrap">
+            <table className="datatable-table">
                 <thead>
                     <tr>
                         {
@@ -133,8 +128,9 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                 </thead>
                 <tbody>
                     {data?.length == 0 && <tr>
-                        <td colSpan={Headers?.length + 1} className='text-center'>
-                            <b>{NoDataPlaceholder || "Kayıt bulunamadı"}</b>
+                        <td colSpan={Headers?.length + 1} className='datatable-empty'>
+                            <div className="datatable-empty-icon"><i className="icon-inbox"></i></div>
+                            <span>{NoDataPlaceholder || "Kayıt bulunamadı"}</span>
                         </td>
                     </tr>}
                     {/* {loading && <tr>
@@ -199,7 +195,7 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
 
 
                                         } else {
-                                            return (<td colSpan={cs} key={jkey + key} style={{ textAlign: "center" }} ><b style={{ fontSize: 19 }}>{" - "}</b></td>)
+                                            return (<td colSpan={cs} key={jkey + key} className="text-center"><span className="empty-cell">{" - "}</span></td>)
 
                                         }
 
@@ -207,32 +203,16 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                                 }
 
                             })}  {HideButtons != true &&
-                                <td className="text-center">
-                                    <div className='row justify-content-center'  >
-                                        <Dropdown isOpen={toggleActions.toggle && toggleActions.key == key} toggle={() => { toggleAction(key); }} >
-                                            <DropdownToggle className='d-flex align-items-center' style={{ backgroundColor: '#239A8F' }} >
-                                                <i className="icon-menu9"></i>
-                                            </DropdownToggle>
-                                            <DropdownMenu o>
-                                                <div className="">
-                                                    <div className='row justify-content-center' >
-
-                                                        <>   <div className='col-12 text-center mb-2'>
-                                                            <button className='btn btn-outline-danger' onClick={() => { deleteButtonFunc(item) }}><i className="icon-trash"></i> Sil</button>
-
-                                                        </div>
-                                                            <div className='col-12 text-center'>
-                                                                <button className='btn btn-outline-success' onClick={() => { EditButton(item) }}><i className="icon-pencil"></i> Düzenle</button>
-
-                                                            </div></>
-
-                                                    </div>
-                                                </div>
+                                <td className="datatable-actions-cell">
+                                    <Dropdown isOpen={toggleActions.toggle && toggleActions.key == key} toggle={() => { toggleAction(key); }}>
+                                        <DropdownToggle className="datatable-actions-toggle">
+                                            <i className="icon-menu9"></i>
+                                        </DropdownToggle>
+                                            <DropdownMenu>
+                                                <button className='btn btn-outline-danger' onClick={() => { deleteButtonFunc(item) }}><i className="icon-trash"></i> Sil</button>
+                                                <button className='btn btn-outline-success' onClick={() => { EditButton(item) }}><i className="icon-pencil"></i> Düzenle</button>
                                             </DropdownMenu>
                                         </Dropdown>
-                                    </div>
-
-
                                 </td>
                             }
                         </tr>
@@ -241,8 +221,10 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
 
                 </tbody>
             </table>
-            <div className='row justify-content-center mt-4'>
-                {data?.length > 0 && Pagination && <ReactPaginate
+            </div>
+            {data?.length > 0 && Pagination && (
+            <div className="datatable-pagination-wrap">
+                <ReactPaginate
                     className="pager-base"
                     pageLinkClassName="pager-list"
                     breakLabel="..."
@@ -252,9 +234,9 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                     pageCount={pagination}
                     previousLabel={<><i className='fa fa-arrow-left'></i> Önceki</>}
                     renderOnZeroPageCount={null}
-                />}
-                {/* {pagination.map((item, key) => { return <div key={key}>{item}</div> })} */}
+                />
             </div>
+            )}
         </div>
 
     )
