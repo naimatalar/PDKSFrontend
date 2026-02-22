@@ -1,4 +1,4 @@
-import { Dropdown, DropdownItem, DropdownMenu, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
 import Image from 'next/image';
 import React, { useEffect, useState, useRef, } from 'react';
 import { DropdownToggle } from 'reactstrap';

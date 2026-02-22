@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
+import AppModalHeader from './AppModalHeader';
 import { ErrorMessage, Formik, Field, Form } from 'formik';
 import ReactDatePicker from 'react-datepicker';
 import ReactSelect from "react-select";
@@ -117,14 +118,9 @@ function CalendarCreateForm({ open, initialWorkPlanData, refreshCalendar }) {
             >
                 {({ isSubmitting, values, setFieldValue, handleBlur }) => (<Modal size='md' isOpen={true}>
                     <Form className="col-md-12 col-12 form-n-popup p-0">
-                        <ModalHeader cssModule={{ 'modal-title': 'w-100 text-center m-0' }}>
-                            <div className="d-flex justify-content-center mb-2">
-                            </div>
-                            <div className="d-flex ">
-                                <p>İş <b>Planı</b> Kayıt</p>
-
-                            </div>
-                        </ModalHeader>
+                        <AppModalHeader toggle={() => open(false)}>
+                            İş <b>Planı</b> Kayıt
+                        </AppModalHeader>
                         <ModalBody>
 
 

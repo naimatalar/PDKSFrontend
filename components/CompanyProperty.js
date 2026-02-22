@@ -6,7 +6,7 @@ import Layout from '../layout/layout';
 import PageHeader from '../layout/pageheader';
 import PageLoading from '../layout/pageLoading';
 import Image from "next/image"
-import { Modal, ModalBody, ModalHeader, Tooltip } from 'reactstrap';
+import { Tooltip } from 'reactstrap';
 import { apiConstant, fileUploadUrl, GetWithToken, imageUploadUrl, PostWithToken, PostWithTokenFile } from '../pages/api/crud';
 import ReactSelect from 'react-select';
 import CurrencyInput from 'react-currency-input-field';

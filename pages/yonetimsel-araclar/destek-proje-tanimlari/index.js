@@ -1,12 +1,13 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 import AlertFunction from "../../../components/alertfunction";
+import AppModalHeader from "../../../components/AppModalHeader";
 import DataTable from "../../../components/datatable";
 import Layout from "../../../layout/layout";
 import PageHeader from "../../../layout/pageheader";
 import PageLoading from "../../../layout/pageLoading";
 import Image from "next/image";
-import { Button, Modal, ModalBody, ModalHeader, Tooltip } from "reactstrap";
+import { Button, Modal, ModalBody, Tooltip } from "reactstrap";
 import {
   fileUploadUrl,
   GetWithToken,
@@ -225,21 +226,9 @@ export default function Index() {
         toggle={() => setModelOpen(!modalOpen)}
         modalTransition={{ timeout: 100 }}
       >
-        <ModalHeader cssModule={{ "modal-title": "w-100 text-center" }}>
-          <div className="d-flex justify-content-center mb-2"></div>
-          <div className="d-flex ">
-            <p>
-              Proje <b>Tanımlama</b> Formu
-            </p>
-          </div>
-          <button
-            onClick={() => setModelOpen(!modalOpen)}
-            type="button"
-            className="modal-close-button btn btn-danger btn-sm p-1"
-          >
-            <i className="fas fa-times"></i>
-          </button>
-        </ModalHeader>
+        <AppModalHeader toggle={() => setModelOpen(!modalOpen)}>
+          Proje <b>Tanımlama</b> Formu
+        </AppModalHeader>
         <ModalBody>
           <Formik
             initialValues={initialData}

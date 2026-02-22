@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
 import AlertFunction from '../../../../components/alertfunction';
 import DataTable from '../../../../components/datatable';
+import AppModalHeader from '../../../../components/AppModalHeader';
 import PageLoading from '../../../../layout/pageLoading';
 import DebisButton from '../../../../components/button';
 import { GetWithToken, PostWithToken } from '../../../api/crud';
@@ -50,7 +51,7 @@ export default function PozisyonTanimlama() {
         <>
             {loading && <PageLoading />}
             <Modal isOpen={modalOpen} toggle={toggle} size="md">
-                <ModalHeader toggle={toggle}>{formInitial.id ? 'Pozisyon Düzenle' : 'Pozisyon Ekle'}</ModalHeader>
+                <AppModalHeader toggle={toggle}>{formInitial.id ? 'Pozisyon Düzenle' : 'Pozisyon Ekle'}</AppModalHeader>
                 <ModalBody>
                     <Formik initialValues={formInitial} onSubmit={submit} enableReinitialize>
                         {({ handleSubmit }) => (

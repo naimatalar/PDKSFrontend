@@ -5,7 +5,7 @@ import DataTable from "../../../components/datatable";
 import Layout from "../../../layout/layout";
 import PageHeader from "../../../layout/pageheader";
 import PageLoading from "../../../layout/pageLoading";
-import { Button, Modal, ModalBody, ModalHeader, Tooltip } from "reactstrap";
+import { Button, Modal, ModalBody, Tooltip } from "reactstrap";
 import {
   fileUploadUrl,
   GetWithToken,

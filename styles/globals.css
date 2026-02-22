@@ -154,3 +154,41 @@ a {
   border-radius: 5px;
   border:1px solid rgb(53, 0, 245)
 }
+
+/* Unified modal header component styles */
+.app-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #e5edf7;
+  padding: 0.8rem 1rem;
+}
+
+.app-modal-header .modal-title,
+.app-modal-header h5 {
+  margin: 0;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.app-modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  background: #fff1f2;
+  color: #dc2626;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.app-modal-close-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}

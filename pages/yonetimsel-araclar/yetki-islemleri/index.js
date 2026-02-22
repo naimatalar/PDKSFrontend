@@ -4,6 +4,7 @@ import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import PageLoading from '../../../layout/pageLoading';
 import { GetWithToken, PostWithToken } from '../../api/crud';
+import styles from './yetki-islemleri.module.css';
 
 export default function Index() {
     const [loading, setLoading] = useState(true)
@@ -32,20 +33,20 @@ export default function Index() {
             // nav-item-expanded nav-item-open
             if (item.parentId == null && item.isMainPage) {
 
-                return (<ul className='tree col-12 col-lg-5 col-md-5  mr-2'><li key={key} >
+                return (<ul className={`tree ${styles.permissionTreeGroup} col-12 col-lg-5 col-md-5 mr-2`}><li key={key} >
 
-                    <a href="#" onClick={() => { multiActivateToggle(data.id, item.id) }} className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && "there-data"}><i className={item.iconName}></i> <span>{item.pageName}</span></a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); multiActivateToggle(data.id, item.id) }} className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && "there-data"}><i className={item.iconName}></i> <span>{item.pageName}</span></a>
 
                     <ul >
                         {d.data.menuModules?.filter((x) => { return x.parentId == item.id })?.map((jitem, jkey) => {
                             return <li key={jkey} >
-                                <a onClick={() => { d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && singleActivateToggle(data.id, jitem.id) || (() => { }) }} href='#' className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length > 0 && "there-data" || d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length == 0 && " none-strs"}> {jitem.pageName}</a>
+                                <a onClick={(e) => { e.preventDefault(); d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && singleActivateToggle(data.id, jitem.id) || (() => { }) }} href='#' className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length > 0 && "there-data" || d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length == 0 && " none-strs"}> {jitem.pageName}</a>
 
                                 <ul >
                                     {d.data.menuModules?.filter((x) => { return x.parentId == jitem.id })?.map((titem, tkey) => {
 
                                         return <li key={tkey} >
-                                            <a onClick={() => { (d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length > 0 && singleActivateToggle(data.id, titem.id)) || (() => { }) }} href='#' className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == titem.id)?.length > 0 && "there-data " || (d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length == 0) && " none-strs"}><i className='icon-pencil'></i> {titem.pageName}</a>
+                                            <a onClick={(e) => { e.preventDefault(); (d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length > 0 && singleActivateToggle(data.id, titem.id)) || (() => { }) }} href='#' className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == titem.id)?.length > 0 && "there-data " || (d.data.role?.userMenuModules?.filter((x) => x.menuModelId == jitem.id)?.length == 0) && " none-strs"}><i className='icon-pencil'></i> {titem.pageName}</a>
 
                                         </li>
 
@@ -61,8 +62,8 @@ export default function Index() {
                 </li></ul>)
             }
             if (item.parentId == null && item.isMainPage == false) {
-                return (<ul className='tree col-12 col-lg-5 col-md-5  mr-2'> <li key={key}>
-                    <a href="#" className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && "there-data"} onClick={() => { singleActivateToggle(data.id, item.id) }}  >
+                return (<ul className={`tree ${styles.permissionTreeGroup} col-12 col-lg-5 col-md-5 mr-2`}> <li key={key}>
+                    <a href="#" className={d.data.role?.userMenuModules?.filter((x) => x.menuModelId == item.id)?.length > 0 && "there-data"} onClick={(e) => { e.preventDefault(); singleActivateToggle(data.id, item.id) }}  >
                         <i className={item.iconName}></i>  &nbsp;{item.pageName}
                         {/* <span className="badge bg-blue-400 align-self-center ml-auto">2.2</span> */}
                     </a>
@@ -110,58 +111,63 @@ export default function Index() {
             }
 
             <Layout>
-                <PageHeader title="Yeki Tanımlama" map={[
+                <PageHeader title="Yetki Tanımlama" map={[
                     { url: "", name: "Yetki Tanımları" },
                     { url: "", name: "Yetki Tanımlama" }
                 ]}>
                 </PageHeader>
-                <div className='content d-flex'>
-                    <div className='sidebar sidebar-light sidebar-secondary sidebar-expand-md'>
+                <div className={`content d-flex ${styles.yetkiIslemleriPage}`}>
+                    <div className={`sidebar sidebar-light sidebar-secondary sidebar-expand-md ${styles.yetkiSidebar}`}>
                         <div className='sidebar-content'>
-                            <div className='card'>
-
-
-                                <div className='card-header bg-transparent header-elements-inline row'>
-                                    <div className='row'>
-                                        <h2><b>Gruplar</b></h2>
-                                        Yetki Vermek istediğiniz grubu seçiniz
-
-                                        {/* <span></span> */}
+                            <div className={`card ${styles.yetkiRolesCard}`}>
+                                <div className='card-header bg-transparent header-elements-inline'>
+                                    <div>
+                                        <h5 className='mb-1'>Roller</h5>
+                                        <span className='text-muted'>Yetki vermek istediğiniz grubu seçiniz.</span>
                                     </div>
                                 </div>
-
-
-
                                 <div className='card-body'>
-{/* 
-                                    <ol class="rounded-list">
-                                        <li><a href="">List item</a></li>
-                                        <li><a href="">List item</a></li>
-
-                                        <li><a href="">List item</a></li>
-                                        <li><a href="">List item</a></li>
-                                    </ol> */}
-
-                                    <ol className='rounded-list'>
+                                    <div className={styles.roleList}>
                                         {roles.map((item, key) => {
-                                            if (selectedRoles?.id == item.id) {
-                                                return <li onClick={() => { GetMenuModules(item) }} key={key} style={{ cursor: "pointer" }} className='act' ><a style={{fontWeight:"bold"}}>{">>"} {item.name}</a></li>
-
-                                            } else {
-                                                return <li onClick={() => { GetMenuModules(item) }} key={key} style={{ cursor: "pointer" }}><a >{item.name}</a></li>
-
-                                            }
+                                            const isSelected = selectedRoles?.id == item.id;
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    key={key}
+                                                    onClick={() => { GetMenuModules(item) }}
+                                                    className={`${styles.roleItem} ${isSelected ? styles.roleItemSelected : ''}`}
+                                                >
+                                                    <span className={styles.roleName}>{item.name}</span>
+                                                    <span className={styles.roleAction}>{isSelected ? 'Seçili' : 'Seç'}</span>
+                                                </button>
+                                            );
                                         })}
-
-                                    </ol>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='content-wrapper'>
+                    <div className={`content-wrapper ${styles.yetkiContentWrapper}`}>
                         <div className='content pl-4 pt-3'>
-                            <div className='row'>
-                                {permissionModuleList}
+                            <div className={`card ${styles.yetkiContentCard}`}>
+                                <div className='card-header bg-transparent'>
+                                    <h5 className='mb-1'>Menü Yetkileri</h5>
+                                    <span className='text-muted'>
+                                        {selectedRoles?.name ? `${selectedRoles.name} rolü için menü yetkilerini yönetiyorsunuz.` : 'Soldan bir rol seçiniz.'}
+                                    </span>
+                                </div>
+                                <div className='card-body'>
+                                    {selectedRoles?.id ? (
+                                        <div className='row'>
+                                            {permissionModuleList}
+                                        </div>
+                                    ) : (
+                                        <div className={styles.yetkiEmptyState}>
+                                            <i className='icon-shield-check text-primary'></i>
+                                            <p className='mb-0'>Yetki yönetimi için önce bir rol seçin.</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
 

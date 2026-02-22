@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
 import AlertFunction from '../../../components/alertfunction';
 import DataTable from '../../../components/datatable';
+import AppModalHeader from '../../../components/AppModalHeader';
 import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import PageLoading from '../../../layout/pageLoading';
@@ -68,7 +69,7 @@ export default function Index() {
         <>
             {loading && <PageLoading />}
             <Modal isOpen={modalOpen} toggle={toggle} size="md">
-                <ModalHeader toggle={toggle}>{formInitial.id ? 'Grup Düzenle' : 'Grup Ekle'}</ModalHeader>
+                <AppModalHeader toggle={toggle}>{formInitial.id ? 'Grup Düzenle' : 'Grup Ekle'}</AppModalHeader>
                 <ModalBody>
                     <Formik initialValues={formInitial} onSubmit={submit} enableReinitialize>
                         {({ handleSubmit }) => (

@@ -4,10 +4,11 @@
 
 /* ===== Ana Container ===== */
 .datatable-pro {
-  background: #fff;
+  background: #eef2f7;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+  border: 1px solid #dbe3ee;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  overflow: visible;
 }
 
 /* ===== Header ===== */
@@ -15,16 +16,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #dfe7f2 0%, #e8eef6 100%);
+  border-bottom: 1px solid #cfd9e8;
 }
 
 .datatable-pro .datatable-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
-  margin: 0;
+  color: #0f172a;
+  margin: 0 auto 0 0;
   letter-spacing: -0.02em;
 }
 
@@ -32,6 +34,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -54,14 +57,17 @@
 .datatable-pro .datatable-description {
   padding: 0.75rem 1.25rem;
   font-size: 0.9rem;
-  color: #64748b;
-  background: #fafafa;
-  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  background: #e7edf6;
+  border-bottom: 1px solid #d7e0ec;
 }
 
 /* ===== Table Wrapper ===== */
 .datatable-pro .datatable-table-wrap {
   overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+  background: #f8fafd;
 }
 
 /* ===== Table ===== */
@@ -78,9 +84,9 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #475569;
-  background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-bottom: 2px solid #0f172a;
 }
 
 .datatable-pro .datatable-table thead th:last-child {
@@ -89,21 +95,67 @@
 
 .datatable-pro .datatable-table tbody td {
   padding: 0.875rem 1rem;
-  color: #334155;
-  border-bottom: 1px solid #f1f5f9;
+  color: #1f2937;
+  border-bottom: 1px solid #e7edf5;
   vertical-align: middle;
 }
 
 .datatable-pro .datatable-table tbody tr {
+  background: #ffffff;
   transition: background 0.15s ease;
 }
 
 .datatable-pro .datatable-table tbody tr:hover {
-  background: #f8fafc;
+  background: #f3f7fc;
 }
 
 .datatable-pro .datatable-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Loading state (datatable.js uyumlu): veri gelene kadar tbody bos olur */
+.datatable-pro .datatable-table-wrap {
+  position: relative;
+}
+
+.datatable-pro .datatable-table-wrap:has(.datatable-table tbody:empty) {
+  min-height: 220px;
+}
+
+.datatable-pro .datatable-table-wrap:has(.datatable-table tbody:empty)::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 18px);
+  width: 26px;
+  height: 26px;
+  transform: translateX(-50%);
+  border: 3px solid #dbe7f6;
+  border-top-color: #0f6cbf;
+  border-radius: 50%;
+  animation: datatableSpin 0.85s linear infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.datatable-pro .datatable-table-wrap:has(.datatable-table tbody:empty)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 18px);
+  transform: translateX(-50%);
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes datatableSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Empty cell styling */
@@ -116,6 +168,8 @@
 .datatable-pro .datatable-actions-cell {
   text-align: center;
   width: 100px;
+  position: relative;
+  overflow: visible;
 }
 
 .datatable-pro .datatable-actions-toggle {
@@ -143,6 +197,18 @@
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
   border: 1px solid #e2e8f0;
+}
+
+.datatable-pro .datatable-actions-cell .dropdown {
+  position: relative;
+}
+
+.datatable-pro .datatable-actions-cell .dropdown-menu {
+  left: auto !important;
+  right: 0 !important;
+  bottom: calc(100% + 6px);
+  top: auto !important;
+  z-index: 1100;
 }
 
 .datatable-pro .dropdown-menu .btn {
@@ -203,8 +269,8 @@
 /* ===== Pagination ===== */
 .datatable-pro .datatable-pagination-wrap {
   padding: 1rem 1.25rem;
-  background: #fafafa;
-  border-top: 1px solid #f1f5f9;
+  background: #e7edf6;
+  border-top: 1px solid #d7e0ec;
 }
 
 .datatable-pro .pager-base {

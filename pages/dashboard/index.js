@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../../layout/layout';
 import PageHeader from '../../layout/pageheader';
 import { GetWithToken } from '../api/crud';
@@ -10,36 +10,155 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 const CHART_COLORS = ['#239A8F', '#17a2b8', '#28a745', '#ffc107', '#fd7e14', '#e83e8c', '#6f42c1', '#20c997'];
 
 export default function Index() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState(null);
+    const [dailyPasses, setDailyPasses] = useState([]);
+    const [hourlyPasses, setHourlyPasses] = useState([]);
+    const [passesByTerminal, setPassesByTerminal] = useState([]);
+    const [personelByFirma, setPersonelByFirma] = useState([]);
+    const [passesByEventType, setPassesByEventType] = useState([]);
+    const [dailyGirisCikis, setDailyGirisCikis] = useState([]);
+
+    const [loadingStats, setLoadingStats] = useState(false);
+    const [loadingDaily, setLoadingDaily] = useState(false);
+    const [loadingHourly, setLoadingHourly] = useState(false);
+    const [loadingTerminal, setLoadingTerminal] = useState(false);
+    const [loadingFirma, setLoadingFirma] = useState(false);
+    const [loadingEventType, setLoadingEventType] = useState(false);
+    const [loadingGirisCikis, setLoadingGirisCikis] = useState(false);
 
     useEffect(() => {
         loadDashboard();
     }, []);
 
-    const loadDashboard = async () => {
-        setLoading(true);
+    const loadStats = async () => {
+        setLoadingStats(true);
         try {
-            const res = await GetWithToken('Dashboard/All');
-            if (res?.data) setData(res.data);
+            const res = await GetWithToken('Dashboard/Stats');
+            setStats(res?.data || null);
         } catch (e) {
-            console.error('Dashboard yüklenemedi', e);
+            console.error('Dashboard Stats yüklenemedi', e);
+        } finally {
+            setLoadingStats(false);
         }
-        setLoading(false);
     };
 
-    if (loading || !data) {
-        return (
-            <Layout>
-                <PageHeader title="Dashboard" map={[]} />
-                <div className="content p-4 text-center">
-                    <span className="spinner-border text-primary" /> Yükleniyor...
-                </div>
-            </Layout>
-        );
-    }
+    const loadDailyPasses = async () => {
+        setLoadingDaily(true);
+        try {
+            const res = await GetWithToken('Dashboard/DailyPasses');
+            setDailyPasses(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard DailyPasses yüklenemedi', e);
+            setDailyPasses([]);
+        } finally {
+            setLoadingDaily(false);
+        }
+    };
 
-    const { stats, dailyPasses, hourlyPasses, passesByTerminal, personelByFirma, passesByEventType, dailyGirisCikis } = data || {};
+    const loadHourlyPasses = async () => {
+        setLoadingHourly(true);
+        try {
+            const res = await GetWithToken('Dashboard/HourlyPassesToday');
+            setHourlyPasses(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard HourlyPassesToday yüklenemedi', e);
+            setHourlyPasses([]);
+        } finally {
+            setLoadingHourly(false);
+        }
+    };
+
+    const loadPassesByTerminal = async () => {
+        setLoadingTerminal(true);
+        try {
+            const res = await GetWithToken('Dashboard/PassesByTerminal');
+            setPassesByTerminal(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard PassesByTerminal yüklenemedi', e);
+            setPassesByTerminal([]);
+        } finally {
+            setLoadingTerminal(false);
+        }
+    };
+
+    const loadPersonelByFirma = async () => {
+        setLoadingFirma(true);
+        try {
+            const res = await GetWithToken('Dashboard/PersonelByFirma');
+            setPersonelByFirma(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard PersonelByFirma yüklenemedi', e);
+            setPersonelByFirma([]);
+        } finally {
+            setLoadingFirma(false);
+        }
+    };
+
+    const loadPassesByEventType = async () => {
+        setLoadingEventType(true);
+        try {
+            const res = await GetWithToken('Dashboard/PassesByEventType');
+            setPassesByEventType(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard PassesByEventType yüklenemedi', e);
+            setPassesByEventType([]);
+        } finally {
+            setLoadingEventType(false);
+        }
+    };
+
+    const loadDailyGirisCikis = async () => {
+        setLoadingGirisCikis(true);
+        try {
+            const res = await GetWithToken('Dashboard/DailyGirisCikis');
+            setDailyGirisCikis(res?.data || []);
+        } catch (e) {
+            console.error('Dashboard DailyGirisCikis yüklenemedi', e);
+            setDailyGirisCikis([]);
+        } finally {
+            setLoadingGirisCikis(false);
+        }
+    };
+
+    const loadDashboard = async () => {
+        loadStats();
+        loadDailyGirisCikis();
+        loadDailyPasses();
+        loadPassesByEventType();
+        loadHourlyPasses();
+        loadPassesByTerminal();
+        loadPersonelByFirma();
+    };
+
+    const renderStatValue = (loadingState, value) => {
+        if (loadingState) {
+            return (
+                <span className="d-inline-flex align-items-center">
+                    <span className="spinner-border spinner-border-sm text-light mr-2" role="status" />
+                    Yükleniyor
+                </span>
+            );
+        }
+        return value ?? 0;
+    };
+
+    const renderChartOrLoader = (loadingState, chartNode, hasData, height = 280) => {
+        if (loadingState) {
+            return (
+                <div style={{ height }} className="d-flex align-items-center justify-content-center text-muted">
+                    <span className="spinner-border spinner-border-sm text-primary mr-2" /> Yükleniyor...
+                </div>
+            );
+        }
+        if (!hasData) {
+            return (
+                <div style={{ height }} className="d-flex align-items-center justify-content-center text-muted">
+                    Veri bulunamadı
+                </div>
+            );
+        }
+        return <div style={{ height }}>{chartNode}</div>;
+    };
 
     const dailyChartData = {
         labels: dailyPasses?.map(d => d.date) || [],
@@ -131,7 +250,7 @@ export default function Index() {
                         <div className="card bg-primary text-white">
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Toplam Personel</h6>
-                                <h3 className="mb-0">{stats?.totalPersonel ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.totalPersonel)}</h3>
                             </div>
                         </div>
                     </div>
@@ -139,7 +258,7 @@ export default function Index() {
                         <div className="card bg-success text-white">
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün Geçiş</h6>
-                                <h3 className="mb-0">{stats?.bugunGecis ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunGecis)}</h3>
                             </div>
                         </div>
                     </div>
@@ -147,7 +266,7 @@ export default function Index() {
                         <div className="card text-white" style={{ backgroundColor: '#239A8F' }}>
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Binada Mevcut</h6>
-                                <h3 className="mb-0">{stats?.binadaMevcut ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.binadaMevcut)}</h3>
                             </div>
                         </div>
                     </div>
@@ -155,7 +274,7 @@ export default function Index() {
                         <div className="card bg-info text-white">
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Terminal</h6>
-                                <h3 className="mb-0">{stats?.totalTerminal ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.totalTerminal)}</h3>
                             </div>
                         </div>
                     </div>
@@ -163,7 +282,7 @@ export default function Index() {
                         <div className="card bg-warning text-dark">
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün İzinli</h6>
-                                <h3 className="mb-0">{stats?.bugunIzinli ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunIzinli)}</h3>
                             </div>
                         </div>
                     </div>
@@ -171,7 +290,7 @@ export default function Index() {
                         <div className="card text-white" style={{ backgroundColor: '#28a745' }}>
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün Giriş</h6>
-                                <h3 className="mb-0">{stats?.bugunGiris ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunGiris)}</h3>
                             </div>
                         </div>
                     </div>
@@ -179,7 +298,7 @@ export default function Index() {
                         <div className="card bg-danger text-white">
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün Çıkış</h6>
-                                <h3 className="mb-0">{stats?.bugunCikis ?? 0}</h3>
+                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunCikis)}</h3>
                             </div>
                         </div>
                     </div>
@@ -190,9 +309,12 @@ export default function Index() {
                     <div className="col-12">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 300 }}>
-                                    <Bar data={girisCikisChartData} options={chartOptions('Son 7 Gün Günlük Giriş / Çıkış')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingGirisCikis,
+                                    <Bar data={girisCikisChartData} options={chartOptions('Son 7 Gün Günlük Giriş / Çıkış')} />,
+                                    (dailyGirisCikis?.length || 0) > 0,
+                                    300
+                                )}
                             </div>
                         </div>
                     </div>
@@ -203,18 +325,22 @@ export default function Index() {
                     <div className="col-lg-8">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 280 }}>
-                                    <Line data={dailyChartData} options={chartOptions('Son 7 Gün Günlük Geçiş Sayısı')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingDaily,
+                                    <Line data={dailyChartData} options={chartOptions('Son 7 Gün Günlük Geçiş Sayısı')} />,
+                                    (dailyPasses?.length || 0) > 0
+                                )}
                             </div>
                         </div>
                     </div>
                     <div className="col-lg-4">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 280 }}>
-                                    <Doughnut data={eventChartData} options={chartOptions('Geçiş Tipi Dağılımı')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingEventType,
+                                    <Doughnut data={eventChartData} options={chartOptions('Geçiş Tipi Dağılımı')} />,
+                                    (passesByEventType?.length || 0) > 0
+                                )}
                             </div>
                         </div>
                     </div>
@@ -224,18 +350,22 @@ export default function Index() {
                     <div className="col-lg-6">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 280 }}>
-                                    <Bar data={hourlyChartData} options={chartOptions('Bugün Saatlik Geçiş Dağılımı')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingHourly,
+                                    <Bar data={hourlyChartData} options={chartOptions('Bugün Saatlik Geçiş Dağılımı')} />,
+                                    (hourlyPasses?.length || 0) > 0
+                                )}
                             </div>
                         </div>
                     </div>
                     <div className="col-lg-6">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 280 }}>
-                                    <Doughnut data={terminalChartData} options={chartOptions('Terminal Bazlı Geçiş (Son 7 Gün)')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingTerminal,
+                                    <Doughnut data={terminalChartData} options={chartOptions('Terminal Bazlı Geçiş (Son 7 Gün)')} />,
+                                    (passesByTerminal?.length || 0) > 0
+                                )}
                             </div>
                         </div>
                     </div>
@@ -245,9 +375,11 @@ export default function Index() {
                     <div className="col-lg-6">
                         <div className="card mb-4">
                             <div className="card-body">
-                                <div style={{ height: 280 }}>
-                                    <Doughnut data={firmaChartData} options={chartOptions('Firma Bazlı Personel Dağılımı')} />
-                                </div>
+                                {renderChartOrLoader(
+                                    loadingFirma,
+                                    <Doughnut data={firmaChartData} options={chartOptions('Firma Bazlı Personel Dağılımı')} />,
+                                    (personelByFirma?.length || 0) > 0
+                                )}
                             </div>
                         </div>
                     </div>

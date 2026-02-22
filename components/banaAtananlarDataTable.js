@@ -6,7 +6,8 @@ import {
 import { MRT_Localization_TR } from 'material-react-table/locales/tr';
 import { GetWithToken, PostWithToken } from '../pages/api/crud';
 import AlertFunction from './alertfunction';
-import {  Modal, ModalBody, ModalHeader } from 'reactstrap';
+import {  Modal, ModalBody } from 'reactstrap';
+import AppModalHeader from './AppModalHeader';
 import { ErrorMessage, Formik, Field, Form } from 'formik';
 import ReactSelect from 'react-select';
 import DebisButton from './button';
@@ -167,19 +168,9 @@ const addnewgorev = (data) => {
                 toggle={() => setModalOpen(!modalOpen)}
                 modalTransition={{ timeout: 100 }}
             >
-                <ModalHeader cssModule={{ "modal-title": "w-100 text-center" }} >
-                    <div className="d-flex justify-content-center mb-2"></div>
-                    <div className="d-flex " >
-                        <p>Eğitim Durumu Ekleme</p>
-                    </div>
-                    <button
-                        onClick={() => setModalOpen(!modalOpen)}
-                        type="button"
-                        className="modal-close-button btn btn-danger btn-sm p-1"
-                    >
-                        <i className="fas fa-times"></i>
-                    </button>
-                </ModalHeader>
+                <AppModalHeader toggle={() => setModalOpen(!modalOpen)}>
+                    Eğitim Durumu Ekleme
+                </AppModalHeader>
                 <ModalBody>
                 <Formik
                       initialValues={{

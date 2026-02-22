@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import Layout from '../../../layout/layout.js';
 import PageHeader from '../../../layout/pageheader.js';
 import DebisButton from '../../../components/button.js';
+import AppModalHeader from '../../../components/AppModalHeader';
 
 
 import { ErrorMessage, Formik, Field, Form } from 'formik';
@@ -147,18 +148,9 @@ export default function Index() {
           toggle={() => setModalOpen(!modalOpen)}
           modalTransition={{ timeout: 100 }}
         >
-          <ModalHeader>
-            <div className="d-flex justify-content-between w-100">
-              <p>{initialData.id ? "Veriyi Güncelle" : "Yeni Veri Ekle"}</p>
-              <button
-                onClick={() => setModalOpen(!modalOpen)}
-                type="button"
-                className="modal-close-button btn btn-danger btn-sm p-1"
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-          </ModalHeader>
+          <AppModalHeader toggle={() => setModalOpen(!modalOpen)}>
+            {initialData.id ? "Veriyi Güncelle" : "Yeni Veri Ekle"}
+          </AppModalHeader>
           <ModalBody>
             <Formik
               initialValues={{

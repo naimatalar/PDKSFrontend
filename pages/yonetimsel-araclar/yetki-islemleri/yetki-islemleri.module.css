@@ -1,0 +1,113 @@
+.yetkiIslemleriPage {
+  gap: 1rem;
+}
+
+.yetkiSidebar {
+  min-width: 310px;
+}
+
+.yetkiRolesCard,
+.yetkiContentCard {
+  border: 1px solid #d9e2ee;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.yetkiRolesCard :global(.card-header),
+.yetkiContentCard :global(.card-header) {
+  border-bottom: 1px solid #e7edf5;
+  padding: 1rem 1.25rem;
+}
+
+.roleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.roleItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  text-align: left;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #dbe6f2;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roleItem:hover {
+  border-color: #b8d8f5;
+  box-shadow: 0 6px 14px rgba(14, 116, 200, 0.14);
+  transform: translateY(-1px);
+}
+
+.roleItemSelected {
+  border-color: #0f6cbf;
+  background: linear-gradient(135deg, #0f6cbf 0%, #0a4f8a 100%);
+  box-shadow: 0 10px 18px rgba(10, 79, 138, 0.28);
+}
+
+.roleName {
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.roleAction {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #0f6cbf;
+  background: #e9f4ff;
+  border: 1px solid #c9e4fb;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  flex-shrink: 0;
+}
+
+.roleItemSelected .roleName {
+  color: #fff;
+}
+
+.roleItemSelected .roleAction {
+  color: #0a4f8a;
+  background: #fff;
+  border-color: #fff;
+}
+
+.yetkiContentWrapper :global(.content) {
+  padding-top: 0 !important;
+}
+
+.yetkiEmptyState {
+  min-height: 220px;
+  border: 1px dashed #cfd9e8;
+  border-radius: 10px;
+  background: #f8fbff;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.yetkiEmptyState i {
+  font-size: 2rem;
+}
+
+.permissionTreeGroup {
+  margin-bottom: 1rem;
+}
+
+.permissionTreeGroup > li > a {
+  border-radius: 8px;
+}
