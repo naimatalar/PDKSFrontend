@@ -10,7 +10,7 @@ export const SignalRProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("dgbrdconftknserr");
     const newConnection = new signalR.HubConnectionBuilder()
-    .withUrl(apiConstant + "/signalrhub",
+    .withUrl(apiConstant + "/hubs/dahua-access",
         {
             transport: signalR.HttpTransportType.WebSockets,
             logging: signalR.LogLevel.Information,
@@ -21,7 +21,7 @@ export const SignalRProvider = ({ children }) => {
     ) // Backend URL'nizi buraya koyun
 
     .build();
-    
+    debugger
 setConnection(newConnection)
     return () => {
       if (newConnection) {
