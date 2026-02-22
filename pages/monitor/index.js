@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../../layout/layout';
 import PageHeader from '../../layout/pageheader';
 import DataTable from '../../components/datatable';
@@ -6,6 +6,7 @@ import AppModalHeader from '../../components/AppModalHeader';
 import { GetWithToken } from '../api/crud';
 import { Modal, ModalBody } from 'reactstrap';
 import styles from './monitor.module.css';
+import { SignalRContext } from '../../components/SignalRContext';
 
 export default function MonitorIndex() {
     const [refresh, setRefresh] = useState(null);
@@ -16,6 +17,7 @@ export default function MonitorIndex() {
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailData, setDetailData] = useState(null);
     const [photoPreviewOpen, setPhotoPreviewOpen] = useState(false);
+    const hubConnection = useContext(SignalRContext);
 
     const toggleDetail = () => setDetailOpen(!detailOpen);
     const togglePhotoPreview = () => setPhotoPreviewOpen(!photoPreviewOpen);
@@ -62,6 +64,19 @@ export default function MonitorIndex() {
             loadInstant10();
         }
     }, [activeTab, refresh]);
+
+    useEffect(() => {
+        if (!hubConnection) return;
+
+        const onAccessEvent = () => {
+            setRefresh(new Date());
+        };
+
+        hubConnection.on('ReceiveAccessEvent', onAccessEvent);
+        return () => {
+            hubConnection.off('ReceiveAccessEvent', onAccessEvent);
+        };
+    }, [hubConnection]);
 
     const DetailRow = ({ label, value }) => (
         <div className="col-12 col-md-6 mb-2">
