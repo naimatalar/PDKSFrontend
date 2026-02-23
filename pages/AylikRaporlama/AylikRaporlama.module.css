@@ -1,8 +1,3 @@
-/* Layout'a overflow-x: hidden uygula - sadece tablo div scroll olsun */
-:global(.content-wrapper-no-overflow-x) {
-    overflow-x: hidden !important;
-}
-
 .pageWrap {
     max-width: 100%;
     min-width: 0;

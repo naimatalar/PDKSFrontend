@@ -192,3 +192,8 @@ a {
   border-color: #fca5a5;
   color: #b91c1c;
 }
+
+/* Layout overflow - AylikRaporlama için tablo scroll */
+.content-wrapper-no-overflow-x {
+  overflow-x: hidden !important;
+}
