@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, ModalBody } from 'reactstrap';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Modal, ModalBody, Collapse, Button } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
+import Select from 'react-select';
 import AlertFunction from '../../../components/alertfunction';
 import DataTable from '../../../components/datatable';
 import AppModalHeader from '../../../components/AppModalHeader';
@@ -15,6 +16,9 @@ export default function TerminalListesiIndex() {
     const [initialData, setInitialData] = useState(null);
     const [refreshDatatable, setRefreshDatatable] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [filterOpen, setFilterOpen] = useState(true);
+    const [filterTerminalId, setFilterTerminalId] = useState('');
+    const [terminalListForFilter, setTerminalListForFilter] = useState([]);
     const [terminalGrupList, setTerminalGrupList] = useState([]);
     const [firmaList, setFirmaList] = useState([]);
     const [ioList, setIoList] = useState([]);
@@ -40,6 +44,12 @@ export default function TerminalListesiIndex() {
                 setModelList(d.modelList || []);
                 setCardFormatList(d.cardFormatList || []);
                 setPortList(d.portList || []);
+            })
+            .catch(() => {});
+        GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 500 })
+            .then((x) => {
+                const list = x.data?.data?.list || [];
+                setTerminalListForFilter(list.map((m) => ({ id: m.id ?? m.Id, text: m.name ?? m.Name ?? `${m.id ?? m.Id}` })));
             })
             .catch(() => {});
         setLoading(false);
@@ -107,6 +117,27 @@ export default function TerminalListesiIndex() {
         id: null, name: '', model: '', port: '', controllerNo: '', io: '', func: '', opMode: '', kind: '',
         cardFormat: '', firmaId: '', grupId: '',
     };
+
+    const filterParams = useMemo(() => {
+        const p = {};
+        if (filterTerminalId && filterTerminalId !== '0') p.TerminalId = filterTerminalId;
+        return p;
+    }, [filterTerminalId]);
+
+    const dataUrlWithFilters = useMemo(() => {
+        const qs = new URLSearchParams(filterParams).toString();
+        return `Terminaller/GetAll${qs ? '?' + qs : ''}`;
+    }, [filterParams]);
+
+    const activeFilterCount = Object.keys(filterParams).length;
+
+    const applyFilters = () => setRefreshDatatable(new Date());
+    const clearFilters = () => { setFilterTerminalId(''); setRefreshDatatable(new Date()); };
+
+    const terminalFilterOptions = useMemo(
+        () => [{ value: '', label: 'Tümü' }, ...terminalListForFilter.map((o) => ({ value: `${o.id}`, label: o.text }))],
+        [terminalListForFilter]
+    );
 
     return (
         <>
@@ -195,9 +226,100 @@ export default function TerminalListesiIndex() {
                 />
                 <div className="content pr-3 pl-3">
                     <div className="card">
+                        <div
+                            className="card-body p-0"
+                            style={{
+                                borderRadius: 10,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                marginBottom: 15,
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <div
+                                className="border-bottom"
+                                style={{
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                    background: filterOpen ? 'rgba(124, 58, 237, 0.08)' : '#f8f9fa',
+                                }}
+                                onClick={() => setFilterOpen(!filterOpen)}
+                                onKeyDown={(e) => e.key === 'Enter' && setFilterOpen(!filterOpen)}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = filterOpen ? 'rgba(124, 58, 237, 0.12)' : '#e9ecef';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = filterOpen ? 'rgba(124, 58, 237, 0.08)' : '#f8f9fa';
+                                }}
+                                role="button"
+                                tabIndex={0}
+                                title={filterOpen ? 'Filtreleri gizle' : 'Filtreleri göster'}
+                            >
+                                <div
+                                    className="d-flex align-items-center justify-content-between px-4 py-3"
+                                    style={{ borderLeft: '4px solid #7c3aed' }}
+                                >
+                                    <span className="d-flex align-items-center gap-2">
+                                        <i className="icon-filter4 text-primary" style={{ fontSize: '1.1rem' }} />
+                                        <span className="fw-semibold">Filtreler</span>
+                                        <span className="text-muted small">
+                                            ({filterOpen ? 'gizlemek için tıklayın' : 'görmek için tıklayın'})
+                                        </span>
+                                        {activeFilterCount > 0 && (
+                                            <span className="badge bg-primary rounded-pill">{activeFilterCount} aktif</span>
+                                        )}
+                                    </span>
+                                    <span className="d-flex align-items-center gap-2 text-muted small">
+                                        <span>{filterOpen ? 'Daralt' : 'Genişlet'}</span>
+                                        <i
+                                            className="icon-arrow-down8"
+                                            style={{
+                                                transform: filterOpen ? 'rotate(180deg)' : 'none',
+                                                transition: 'transform 0.25s',
+                                                fontSize: '1.25rem',
+                                            }}
+                                        />
+                                    </span>
+                                </div>
+                            </div>
+                            <Collapse isOpen={filterOpen}>
+                                <div className="px-4 pb-4 pt-0">
+                                    <div className="row g-3 align-items-end">
+                                        <div className="col-12 col-md-6 col-lg-4">
+                                            <label className="form-label small text-muted mb-1">Terminal Adı</label>
+                                            <Select
+                                                classNamePrefix="react-select"
+                                                options={terminalFilterOptions}
+                                                value={terminalFilterOptions.find((x) => x.value === filterTerminalId) || terminalFilterOptions[0]}
+                                                placeholder="Tümü"
+                                                isClearable={false}
+                                                onChange={(o) => setFilterTerminalId(o?.value ?? '')}
+                                                styles={{
+                                                    control: (base, state) => ({
+                                                        ...base,
+                                                        minHeight: 32,
+                                                        fontSize: '0.875rem',
+                                                        borderRadius: 6,
+                                                        borderColor: state.isFocused ? '#7c3aed' : '#dee2e6',
+                                                    }),
+                                                    menu: (base) => ({ ...base, zIndex: 9999 }),
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="col-12 col-md-6 col-lg-auto">
+                                            <Button color="primary" size="sm" onClick={applyFilters}>
+                                                <i className="icon-search4 me-1" /> Filtrele
+                                            </Button>
+                                            <Button color="light" size="sm" outline className="ms-2" onClick={clearFilters}>
+                                                Temizle
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Collapse>
+                        </div>
                         <DataTable
                             Refresh={refreshDatatable}
-                            DataUrl="Terminaller/GetAll"
+                            DataUrl={dataUrlWithFilters}
                             Pagination={{ pageNumber: 1, pageSize: 20 }}
                             UseGetPagination
                             Headers={[['name', 'Terminal Adı'], ['model', 'Model'], ['port', 'Port'], ['sonGecen', 'Son Geçen'], ['grupId', 'Grup Id']]}

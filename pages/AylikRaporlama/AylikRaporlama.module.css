@@ -1,0 +1,226 @@
+/* Layout'a overflow-x: hidden uygula - sadece tablo div scroll olsun */
+:global(.content-wrapper-no-overflow-x) {
+    overflow-x: hidden !important;
+}
+
+.pageWrap {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.filterCard {
+    border: 1px solid #dce6f2;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.filterCard :global(.card-header) {
+    background: linear-gradient(135deg, #f8fcff 0%, #f0f7fd 100%);
+    border-bottom: 1px solid #e2eaf5;
+    font-weight: 600;
+    color: #0f4f8a;
+}
+
+.filterRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filterItem {
+    flex: 0 0 auto;
+    min-width: 140px;
+}
+
+.filterItemWide {
+    min-width: 180px;
+}
+
+.runButton {
+    min-width: 140px;
+}
+
+.reportCard {
+    border: 1px solid #dce6f2;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.reportHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #f8fcff 0%, #f0f7fd 100%);
+    border-bottom: 1px solid #e2eaf5;
+}
+
+.reportTitle {
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.reportBadge {
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+}
+
+/* Sadece tablo scroll - dış div overflow, iç div tabloyu sarar */
+.tableScrollOuter {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: block;
+    min-height: 300px;
+}
+
+.tableScrollOuter table {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.tableScrollOuter thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f1f5f9;
+    box-shadow: 0 1px 0 #e2e8f0;
+}
+
+.tableScrollOuter thead th {
+    white-space: nowrap;
+    font-weight: 600;
+    color: #334155;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.75rem;
+    border-color: #e2e8f0;
+}
+
+.personelCol {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: #fff !important;
+    font-weight: 600;
+    min-width: 130px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+}
+
+.tableScrollOuter thead th.personelCol {
+    background: #f1f5f9 !important;
+    z-index: 11;
+}
+
+.dayCol {
+    min-width: 72px;
+    max-width: 72px;
+    padding: 0.35rem 0.3rem !important;
+    font-size: 0.7rem;
+    text-align: center;
+    vertical-align: middle;
+    border-color: #e2e8f0;
+}
+
+.summaryCol {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.5rem !important;
+    border-color: #e2e8f0;
+    white-space: nowrap;
+}
+
+.tableScrollOuter tbody td {
+    border-color: #e2e8f0;
+    padding: 0.35rem 0.3rem;
+    vertical-align: middle;
+}
+
+.tableScrollOuter tbody tr:hover td:not(.personelCol) {
+    background: #f8fafc;
+}
+
+.tableScrollOuter tbody tr:hover .personelCol {
+    background: #f8fafc !important;
+}
+
+.cellIsGirmedi {
+    background: #dcfce7 !important;
+    color: #166534;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.cellGec {
+    color: #dc2626 !important;
+}
+
+.cellHaftalikIzin {
+    background: #dbeafe !important;
+    color: #1d4ed8;
+}
+
+.cellIzin {
+    background: #fef9c3 !important;
+    color: #854d0e;
+}
+
+.legendWrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.75rem;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.legendColor {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+.loadingWrap {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noData {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .filterRow {
+        flex-direction: column;
+    }
+
+    .filterItem,
+    .filterItemWide {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .tableScrollOuter {
+        max-height: calc(100vh - 400px);
+    }
+}

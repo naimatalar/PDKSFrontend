@@ -26,7 +26,7 @@ import { ToastContainer } from 'react-toastify';
 
 
 
-function Layout({ children, permissionControl = true, loadingContent = false, pageName,isLayoutReady=()=>{} }) {
+function Layout({ children, permissionControl = true, loadingContent = false, pageName, isLayoutReady = () => {}, contentOverflowXHidden = false }) {
     const [toggleButtons, setToggleButtons] = useState(false)
 
 
@@ -325,7 +325,7 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
                 <div className="navbar-brand">
                     <a href="index.html" style={{ width: "100%" }} className="d-inline-block">
 
-                        <Image objectFit='contain' width={50} height={50} layout='fixed' src={require("../layout/global_assets/images/logoInside.png")} ></Image>
+                        <Image objectFit='contain' width={250} height={50} layout='fixed' src={require("../layout/global_assets/images/logoInside.png")} ></Image>
 
                     </a>
 
@@ -507,7 +507,7 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
 
                 </div>
 
-                <div className='content-wrapper'>
+                <div className={`content-wrapper${contentOverflowXHidden ? ' content-wrapper-no-overflow-x' : ''}`}>
 
                     {loadingContent && <PageLoading></PageLoading>}
                     {!permission && !loadingContent && children}
