@@ -173,6 +173,7 @@ export default function MonitorIndex() {
                                 Headers={[
                                     ['terminalName', 'Terminal'],
                                     ['personName', 'Personel'],
+                                    { header: 'Bölüm', dynamicButton: (item) => item?.cboBolum?.ad || '-' },
                                     ['userId', 'User ID'],
                                     ['eventCode', 'Event Kodu'],
                                     { header: 'Tarih/Saat', dynamicButton: (item) => formatTarih(item.eventtime) },
@@ -241,6 +242,14 @@ export default function MonitorIndex() {
                                                 <span className={styles.identityValue}>{detailData?.person?.sicilNo || '-'}</span>
                                             </div>
                                             <div className={styles.identityItem}>
+                                                <span className={styles.identityLabel}>Bölüm</span>
+                                                <span className={styles.identityValue}>{detailData?.person?.cboBolum?.ad || '-'}</span>
+                                            </div>
+                                            <div className={styles.identityItem}>
+                                                <span className={styles.identityLabel}>Firma</span>
+                                                <span className={styles.identityValue}>{detailData?.person?.cboFirma?.ad || '-'}</span>
+                                            </div>
+                                            <div className={styles.identityItem}>
                                                 <span className={styles.identityLabel}>User ID</span>
                                                 <span className={styles.identityValue}>{detailData?.monitoring?.userId || '-'}</span>
                                             </div>
@@ -268,8 +277,17 @@ export default function MonitorIndex() {
                             </div>
 
                             <h6 className={styles.sectionTitle}>Personel Bilgileri</h6>
-                            <div className="row">
+                            <div className="row mb-3">
                                 <DetailRow label="Personel No" value={detailData?.person?.personelNo} />
+                                <DetailRow label="Bölüm" value={detailData?.person?.cboBolum?.ad} />
+                                <DetailRow label="Firma" value={detailData?.person?.cboFirma?.ad} />
+                                <DetailRow label="Görev" value={detailData?.person?.cboGorev?.ad} />
+                                <DetailRow label="Pozisyon" value={detailData?.person?.cboPozisyon?.ad} />
+                                <DetailRow label="Alt Firma" value={detailData?.person?.cboAltFirma?.ad} />
+                                <DetailRow label="Direktörlük" value={detailData?.person?.cboDirektorluk?.ad} />
+                            </div>
+                            <h6 className={styles.sectionTitle}>İletişim Bilgileri</h6>
+                            <div className="row">
                                 <DetailRow label="Telefon" value={detailData?.person?.telefon1} />
                                 <DetailRow label="Cep Telefonu" value={detailData?.person?.cepTelefon} />
                                 <DetailRow label="E-posta" value={detailData?.person?.email} />
