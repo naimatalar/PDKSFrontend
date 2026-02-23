@@ -94,10 +94,12 @@ export default function Login() {
                     <div className="card-body">
                         <div className="text-center mb-3">
                             <Image
-                                src={require("../../layout/global_assets/images/logoInside.png")}
+                                src={require("../../layout/global_assets/images/logoInside_.png")}
                                 alt="Logo Inside"
                                 layout='fixed'
                                 objectFit='contain'
+                                width={200}
+                                height={200}
                             />
                             <h5 className="mb-0">Kullanıcı Girişi</h5>
                             <span className="d-block text-muted">Kullanıcı adı yada mail adresinizi şifrenizle beraber giriniz</span>
