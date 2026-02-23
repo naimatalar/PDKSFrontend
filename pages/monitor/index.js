@@ -15,6 +15,8 @@ export default function MonitorIndex() {
     const [instantLoading, setInstantLoading] = useState(false);
     const [detailOpen, setDetailOpen] = useState(false);
     const [detailLoading, setDetailLoading] = useState(false);
+    const [miniLoading, setMiniLoading] = useState(false);
+
     const [detailData, setDetailData] = useState(null);
     const [photoPreviewOpen, setPhotoPreviewOpen] = useState(false);
     const hubConnection = useContext(SignalRContext);
@@ -47,21 +49,29 @@ export default function MonitorIndex() {
         }
     };
 
-    const loadInstant10 = async () => {
-        setInstantLoading(true);
+    const loadInstant10 = async (loading = true) => {
+        if (loading) {
+            setInstantLoading(true);
+        } else {
+            setMiniLoading(true)
+        }
+
         try {
             const res = await GetWithToken('DahuaAccess/InstantLast10');
             setInstantList(res?.data?.data || []);
         } catch {
             setInstantList([]);
         } finally {
+            setMiniLoading(false)
             setInstantLoading(false);
+
+
         }
     };
 
     useEffect(() => {
         if (activeTab === 'instant10') {
-            loadInstant10();
+            loadInstant10(false);
         }
     }, [activeTab, refresh]);
 
@@ -120,9 +130,10 @@ export default function MonitorIndex() {
                             <div className={styles.instantListWrap}>
                                 <div className={styles.instantListHeader}>
                                     <h6 className="mb-0">Anlık 10 Kayıt</h6>
-                                    <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => setRefresh(new Date())}>
-                                        Yenile
-                                    </button>
+                                    {miniLoading &&
+                                        <div className={[styles.loadingWrap, { minHeight: 10 }]}>
+                                            <div className="spinner-border text-primary" role="status" />
+                                        </div>}
                                 </div>
                                 {instantLoading && (
                                     <div className={styles.loadingWrap}>
@@ -173,8 +184,9 @@ export default function MonitorIndex() {
                                 Headers={[
                                     ['terminalName', 'Terminal'],
                                     ['personName', 'Personel'],
-                                    ['userId', 'User ID'],
-                                    ['eventCode', 'Event Kodu'],
+                                    { header: 'Bölüm',     dynamicButton: (data) => { return <span title='yayın' >{data.cboBolum.ad} </span> }},
+
+
                                     { header: 'Tarih/Saat', dynamicButton: (item) => formatTarih(item.eventtime) },
                                     { header: 'Event Açıklaması', dynamicButton: (item) => item?.eventCodeDesc || item?.description || '-' },
                                     { header: 'İncele', text: 'İncele', onClick: (item) => openDetail(item) },
