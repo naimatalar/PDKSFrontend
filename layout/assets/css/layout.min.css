@@ -513,7 +513,7 @@ body {
 }
 
 .sidebar-dark .sidebar-mobile-toggler:not([class*=bg-]) {
-    background-color: #1e272c
+    background-color: #266c94
 }
 
 .sidebar-dark .sidebar-mobile-toggler a {
@@ -4431,4 +4431,7 @@ legend {
     border: 1px solid red;
     position: absolute;
     right: 4px;
+}
+.constructor-p{
+      background-image: linear-gradient(to right, #0076be70 0%, #02983d 100%);
 }

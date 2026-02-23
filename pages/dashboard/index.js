@@ -262,14 +262,14 @@ export default function Index() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-sm-6 col-xl">
+                    {/* <div className="col-sm-6 col-xl">
                         <div className="card text-white" style={{ backgroundColor: '#239A8F' }}>
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Binada Mevcut</h6>
                                 <h3 className="mb-0">{renderStatValue(loadingStats, stats?.binadaMevcut)}</h3>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="col-sm-6 col-xl">
                         <div className="card bg-info text-white">
                             <div className="card-body">
@@ -286,7 +286,7 @@ export default function Index() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-sm-6 col-xl">
+                    {/* <div className="col-sm-6 col-xl">
                         <div className="card text-white" style={{ backgroundColor: '#28a745' }}>
                             <div className="card-body">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün Giriş</h6>
@@ -301,7 +301,7 @@ export default function Index() {
                                 <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunCikis)}</h3>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Giriş / Çıkış grafiği */}
@@ -322,7 +322,7 @@ export default function Index() {
 
                 {/* Grafikler */}
                 <div className="row">
-                    <div className="col-lg-8">
+                    <div className="col-lg-12">
                         <div className="card mb-4">
                             <div className="card-body">
                                 {renderChartOrLoader(
@@ -333,7 +333,7 @@ export default function Index() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-4">
+                    {/* <div className="col-lg-4">
                         <div className="card mb-4">
                             <div className="card-body">
                                 {renderChartOrLoader(
@@ -343,7 +343,7 @@ export default function Index() {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="row">

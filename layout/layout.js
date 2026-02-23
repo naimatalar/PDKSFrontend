@@ -325,7 +325,7 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
                 <div className="navbar-brand">
                     <a href="index.html" style={{ width: "100%" }} className="d-inline-block">
 
-                        <Image objectFit='contain' layout='fixed' src={require("../layout/global_assets/images/logoInside.png")} ></Image>
+                        <Image objectFit='contain' width={50} height={50} layout='fixed' src={require("../layout/global_assets/images/logoInside.png")} ></Image>
 
                     </a>
 
@@ -482,14 +482,14 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
 
 
                     <div className="sidebar-mobile-toggler text-center d-flex align-items-center justify-content-between">
-                        <a href="#" className="sidebar-mobile-main-toggle" aria-label="Menüyü kapat">
+                        {/* <a href="#" className="sidebar-mobile-main-toggle" aria-label="Menüyü kapat">
                             <i className="icon-arrow-left8"></i>
-                        </a>
-                        <span className="sidebar-nav-label">Menü</span>
-                        <a href="#" className="sidebar-mobile-expand" aria-label="Tam ekran">
+                        </a> */}
+                        <span className="sidebar-nav-label" style={{color:"white"}}>Menü</span>
+                        {/* <a href="#" className="sidebar-mobile-expand" aria-label="Tam ekran">
                             <i className="icon-screen-full"></i>
                             <i className="icon-screen-normal"></i>
-                        </a>
+                        </a> */}
                     </div>
 
 

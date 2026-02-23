@@ -185,7 +185,6 @@ export default function MonitorIndex() {
                                     ['terminalName', 'Terminal'],
                                     ['personName', 'Personel'],
                                     { header: 'Bölüm', dynamicButton: (item) => item?.cboBolum?.ad || '-' },
-                                    { header: 'Bölüm',     dynamicButton: (data) => { return <span title='yayın' >{data.cboBolum.ad} </span> }},
 
 
                                     { header: 'Tarih/Saat', dynamicButton: (item) => formatTarih(item.eventtime) },
