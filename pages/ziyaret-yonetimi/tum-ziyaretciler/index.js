@@ -53,7 +53,6 @@ export default function TumZiyaretcilerPage() {
     };
 
     const headers = [
-        ['id', 'ID'],
         ['kimlikNo', 'Kimlik No'],
         ['telefon', 'Telefon'],
         ['ad', 'Ad'],
@@ -65,12 +64,10 @@ export default function TumZiyaretcilerPage() {
             header: 'Giriş Zamanı',
             dynamicButton: (item) => formatTarihSaat(item?.giris),
         },
-        ['girisSaat', 'Giriş Saat'],
         {
             header: 'Çıkış Zamanı',
             dynamicButton: (item) => formatTarihSaat(item?.cikis),
         },
-        ['cikisSaat', 'Çıkış Saat'],
         ['kartAdi', 'Kart Adı'],
         ['sure', 'Süre'],
         ['sayi', 'Sayı'],
@@ -113,7 +110,24 @@ export default function TumZiyaretcilerPage() {
                             Headers={headers}
                             Title="Tüm Ziyaretçiler"
                             Description="Tüm ziyaretçi kayıtlarını listeleyebilirsiniz."
-                            HeaderButton={{ text: 'Yeni Ziyaretçi Ekle', action: () => window.location.href = '/ziyaret-yonetimi/yeni-ziyaretci' }}
+                            EnableSearch
+                            SearchPlaceholder="Ziyaretçi ara (Ad, Soyad, Telefon, Kimlik No...)"
+                            SearchKeys={[
+                                'id',
+                                'kimlikNo',
+                                'telefon',
+                                'ad',
+                                'soyad',
+                                'firma',
+                                'geldigiBolum',
+                                'geldigiKisi',
+                                'kartAdi',
+                                'kimlikTuru',
+                                'girisSaat',
+                                'cikisSaat',
+                                'sure',
+                                'sayi',
+                            ]}
                             HideButtons
                             NoDataPlaceholder="Kayıt bulunamadı."
                         />

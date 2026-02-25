@@ -1,17 +1,44 @@
-import React, { cloneElement, useEffect, useState } from 'react';
+import React, { cloneElement, useEffect, useMemo, useState } from 'react';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { GetWithToken, PostWithToken } from '../pages/api/crud';
 import { confirmAlert } from 'react-confirm-alert';
 import ReactPaginate from 'react-paginate';
 import { PriceSplitter } from './pricesptitter';
 
-export default function DataTable({ GetAllData, Data, Refresh = null, Title, Description, Headers = [[] || { text: undefined, header: undefined, dynamicButton: undefined, onClick: undefined }], DataUrl, Pagination = undefined, UseGetPagination = false, HeaderButton = { text: "", action: (e) => { } }, EditButton = (e) => { }, DeleteButton = (e) => { }, HideButtons = false, NoDataPlaceholder }) {
+const trLower = (v) => String(v ?? '').toLocaleLowerCase('tr-TR');
+const getByPath = (obj, path) => {
+    if (!obj || !path) return undefined;
+    if (typeof path !== 'string') return undefined;
+    if (!path.includes('.')) return obj[path];
+    return path.split('.').reduce((acc, key) => (acc == null ? undefined : acc[key]), obj);
+};
+
+export default function DataTable({
+    GetAllData,
+    Data,
+    Refresh = null,
+    Title,
+    Description,
+    Headers = [[] || { text: undefined, header: undefined, dynamicButton: undefined, onClick: undefined }],
+    DataUrl,
+    Pagination = undefined,
+    UseGetPagination = false,
+    HeaderButton = { text: "", action: (e) => { } },
+    EditButton = (e) => { },
+    DeleteButton = (e) => { },
+    HideButtons = false,
+    NoDataPlaceholder,
+    EnableSearch = false,
+    SearchKeys = [],
+    SearchPlaceholder = 'Ara...',
+}) {
 
     const [data, setData] = useState(Data)
     const [toggleActions, setToggleActions] = useState({ toggle: false, key: 0 })
     const [selectedPage, setSelectedPage] = useState(1)
     const [pagination, setPagination] = useState()
     const [loading, setLoading] = useState(true)
+    const [searchText, setSearchText] = useState('')
 
     const toggleAction = (key) => setToggleActions({ toggle: !toggleActions.toggle, key: key })
     useEffect(() => {
@@ -90,15 +117,63 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
 
     }
 
+    const filteredRows = useMemo(() => {
+        const q = trLower(searchText).trim();
+        if (!EnableSearch || !q) return data;
+        const keys = Array.isArray(SearchKeys) ? SearchKeys.filter(Boolean) : [];
+        return (data || []).filter((row) => {
+            if (!row) return false;
+            if (keys.length > 0) {
+                const haystack = keys
+                    .map((k) => getByPath(row, k))
+                    .filter((v) => v != null && v !== '')
+                    .map((v) => trLower(v))
+                    .join(' ');
+                return haystack.includes(q);
+            }
+            const haystack = Object.values(row)
+                .filter((v) => ['string', 'number', 'boolean'].includes(typeof v))
+                .map((v) => trLower(v))
+                .join(' ');
+            return haystack.includes(q);
+        });
+    }, [EnableSearch, SearchKeys, data, searchText]);
+
     return (
         <div className='datatable-pro'>
             {Title && <div className="datatable-header">
                 <h5 className="datatable-title">{Title}</h5>
-                {HeaderButton?.text != "" && (
-                    <button className="datatable-header-btn" onClick={HeaderButton.action}>
-                        <i className='icon-plus22'></i>
-                        <span>{HeaderButton.text}</span>
-                    </button>
+                {(EnableSearch || HeaderButton?.text != "") && (
+                    <div className="d-flex align-items-center gap-2 ms-auto">
+                        {HeaderButton?.text != "" && (
+                            <button className="datatable-header-btn" onClick={HeaderButton.action}>
+                                <i className='icon-plus22'></i>
+                                <span>{HeaderButton.text}</span>
+                            </button>
+                        )}
+                        {EnableSearch && (
+                            <div className="d-flex align-items-center gap-2" style={{ minWidth: 260 }}>
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    value={searchText}
+                                    onChange={(e) => setSearchText(e.target.value)}
+                                    placeholder={SearchPlaceholder}
+                                    aria-label={SearchPlaceholder}
+                                />
+                                {searchText?.trim() ? (
+                                    <button
+                                        type="button"
+                                        className="btn btn-light btn-sm"
+                                        onClick={() => setSearchText('')}
+                                        title="Temizle"
+                                    >
+                                        ×
+                                    </button>
+                                ) : null}
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>}
 
@@ -127,7 +202,7 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                     </tr>
                 </thead>
                 <tbody>
-                    {data?.length == 0 && <tr>
+                    {filteredRows?.length == 0 && <tr>
                         <td colSpan={Headers?.length + 1} className='datatable-empty'>
                             <div className="datatable-empty-icon"><i className="icon-inbox"></i></div>
                             <span>{NoDataPlaceholder || "Kayıt bulunamadı"}</span>
@@ -140,7 +215,7 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                     </tr>} */}
 
         
-                    {data?.map((item, key) => {
+                    {filteredRows?.map((item, key) => {
 
                         return <tr key={key + 5} id={key}>
                             {Headers?.map((jitem, jkey) => {
@@ -222,7 +297,7 @@ export default function DataTable({ GetAllData, Data, Refresh = null, Title, Des
                 </tbody>
             </table>
             </div>
-            {data?.length > 0 && Pagination && (
+            {data?.length > 0 && Pagination && (!EnableSearch || !searchText?.trim()) && (
             <div className="datatable-pagination-wrap">
                 <ReactPaginate
                     className="pager-base"

@@ -1954,7 +1954,7 @@ input[class*=bg-]:not(.bg-light):not(.bg-white):not(.bg-transparent)+.form-contr
     border-bottom-color: transparent;
     position: relative;
     width: -webkit-fill-available;
-    top: 35rem;
+    /* top: 35rem; */
 }
 
 .navbar-component {
@@ -2544,7 +2544,7 @@ input[class*=bg-]:not(.bg-light):not(.bg-white):not(.bg-transparent)+.form-contr
 }
 
 .navbar-light {
-    margin-top: 50rem;
+    /* margin-top: 50rem; */
     color: rgba(51, 51, 51, .85);
     background-color: #fff;
     border-bottom-color: rgba(0, 0, 0, .125)

@@ -14,7 +14,6 @@ export default function Index() {
     const [dailyPasses, setDailyPasses] = useState([]);
     const [hourlyPasses, setHourlyPasses] = useState([]);
     const [passesByTerminal, setPassesByTerminal] = useState([]);
-    const [personelByFirma, setPersonelByFirma] = useState([]);
     const [passesByEventType, setPassesByEventType] = useState([]);
     const [dailyGirisCikis, setDailyGirisCikis] = useState([]);
 
@@ -22,7 +21,6 @@ export default function Index() {
     const [loadingDaily, setLoadingDaily] = useState(false);
     const [loadingHourly, setLoadingHourly] = useState(false);
     const [loadingTerminal, setLoadingTerminal] = useState(false);
-    const [loadingFirma, setLoadingFirma] = useState(false);
     const [loadingEventType, setLoadingEventType] = useState(false);
     const [loadingGirisCikis, setLoadingGirisCikis] = useState(false);
 
@@ -81,19 +79,6 @@ export default function Index() {
         }
     };
 
-    const loadPersonelByFirma = async () => {
-        setLoadingFirma(true);
-        try {
-            const res = await GetWithToken('Dashboard/PersonelByFirma');
-            setPersonelByFirma(res?.data || []);
-        } catch (e) {
-            console.error('Dashboard PersonelByFirma yüklenemedi', e);
-            setPersonelByFirma([]);
-        } finally {
-            setLoadingFirma(false);
-        }
-    };
-
     const loadPassesByEventType = async () => {
         setLoadingEventType(true);
         try {
@@ -127,7 +112,6 @@ export default function Index() {
         loadPassesByEventType();
         loadHourlyPasses();
         loadPassesByTerminal();
-        loadPersonelByFirma();
     };
 
     const renderStatValue = (loadingState, value) => {
@@ -189,13 +173,13 @@ export default function Index() {
         }]
     };
 
-    const firmaChartData = {
-        labels: personelByFirma?.map(f => f.firma) || [],
-        datasets: [{
-            data: personelByFirma?.map(f => f.count) || [],
-            backgroundColor: CHART_COLORS
-        }]
-    };
+    const topTerminal = (passesByTerminal || []).reduce((best, cur) => {
+        const bestCount = Number(best?.count ?? -Infinity);
+        const curCount = Number(cur?.count ?? -Infinity);
+        return curCount > bestCount ? cur : best;
+    }, null);
+    const topTerminalName = topTerminal?.terminal ?? '-';
+    const topTerminalCount = topTerminal?.count ?? 0;
 
     const eventChartData = {
         labels: passesByEventType?.map(e => e.eventType) || [],
@@ -247,18 +231,18 @@ export default function Index() {
                 {/* Özet kartlar */}
                 <div className="row mb-4">
                     <div className="col-sm-6 col-xl">
-                        <div className="card bg-primary text-white">
-                            <div className="card-body">
+                        <div className="card bg-primary text-white h-100" style={{ minHeight: 130 }}>
+                            <div className="card-body d-flex flex-column">
                                 <h6 className="text-uppercase mb-1 opacity-75">Toplam Personel</h6>
-                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.totalPersonel)}</h3>
+                                <h3 className="mb-0 mt-auto">{renderStatValue(loadingStats, stats?.totalPersonel)}</h3>
                             </div>
                         </div>
                     </div>
                     <div className="col-sm-6 col-xl">
-                        <div className="card bg-success text-white">
-                            <div className="card-body">
+                        <div className="card bg-success text-white h-100" style={{ minHeight: 130 }}>
+                            <div className="card-body d-flex flex-column">
                                 <h6 className="text-uppercase mb-1 opacity-75">Bugün Geçiş</h6>
-                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunGecis)}</h3>
+                                <h3 className="mb-0 mt-auto">{renderStatValue(loadingStats, stats?.bugunGecis)}</h3>
                             </div>
                         </div>
                     </div>
@@ -271,18 +255,34 @@ export default function Index() {
                         </div>
                     </div> */}
                     <div className="col-sm-6 col-xl">
-                        <div className="card bg-info text-white">
-                            <div className="card-body">
+                        <div className="card bg-info text-white h-100" style={{ minHeight: 130 }}>
+                            <div className="card-body d-flex flex-column">
                                 <h6 className="text-uppercase mb-1 opacity-75">Terminal</h6>
-                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.totalTerminal)}</h3>
+                                <h3 className="mb-0 mt-auto">{renderStatValue(loadingStats, stats?.totalTerminal)}</h3>
                             </div>
                         </div>
                     </div>
                     <div className="col-sm-6 col-xl">
-                        <div className="card bg-warning text-dark">
-                            <div className="card-body">
-                                <h6 className="text-uppercase mb-1 opacity-75">Bugün İzinli</h6>
-                                <h3 className="mb-0">{renderStatValue(loadingStats, stats?.bugunIzinli)}</h3>
+                        <div className="card text-white h-100" style={{ minHeight: 130, backgroundColor: '#ff6f3d' }}>
+                            <div className="card-body d-flex flex-column">
+                                <h6 className="text-uppercase mb-1 opacity-75">En Yoğun Terminal</h6>
+                                {loadingTerminal ? (
+                                    <span className="d-inline-flex align-items-center">
+                                        <span className="spinner-border spinner-border-sm text-light mr-2" role="status" />
+                                        Yükleniyor
+                                    </span>
+                                ) : (
+                                    <>
+                                        <div
+                                            className="text-truncate"
+                                            title={topTerminalName}
+                                            style={{ maxWidth: '100%', fontSize: '0.8rem', lineHeight: 1.1 }}
+                                        >
+                                            {topTerminalName}
+                                        </div>
+                                        <h3 className="mb-0 mt-auto" style={{ fontSize: '1.5rem', color: '#fff' }}>{topTerminalCount}</h3>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -371,19 +371,6 @@ export default function Index() {
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-lg-6">
-                        <div className="card mb-4">
-                            <div className="card-body">
-                                {renderChartOrLoader(
-                                    loadingFirma,
-                                    <Doughnut data={firmaChartData} options={chartOptions('Firma Bazlı Personel Dağılımı')} />,
-                                    (personelByFirma?.length || 0) > 0
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </Layout>
     );

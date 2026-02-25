@@ -527,16 +527,16 @@ function Layout({ children, permissionControl = true, loadingContent = false, pa
                         </div>
                     </div>}
                     <div className="navbar navbar-expand-lg navbar-light">
-                        <div className="text-center d-lg-none w-100">
+                        {/* <div className="text-center d-lg-none w-100">
                             <button type="button" className="navbar-toggler dropdown-toggle" data-toggle="collapse" data-target="#navbar-footer">
                                 <i className="icon-unfold mr-2"></i>
                                 Footer
                             </button>
-                        </div>
+                        </div> */}
 
                         <div className="navbar-collapse collapse" id="navbar-footer">
                             <span className="navbar-text">
-                                &copy; 2022 <b>ARMA BİLİŞİM  </b>Tarafından Projelendirilmiştir
+                                &copy; 2026 <b>ARMA BİLİŞİM  </b>Tarafından Projelendirilmiştir
                             </span>
 
                             <ul className="navbar-nav ml-lg-auto">

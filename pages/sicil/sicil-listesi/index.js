@@ -65,7 +65,9 @@ const FotoDropzone = ({ value, setFieldValue, disabled }) => {
                 {...getRootProps()}
                 className={`border rounded-3 p-3 text-center ${isDragActive ? 'border-primary bg-light' : 'border-dashed'}`}
                 style={{
-                    minWidth: 120,
+                    flex: 1,
+                    width: '100%',
+                    minWidth: 0,
                     minHeight: 100,
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     opacity: disabled ? 0.6 : 1,
@@ -88,7 +90,7 @@ const FotoThumb = ({ src, alt, onClick }) => {
         return (
             <div
                 className="d-flex align-items-center justify-content-center bg-light rounded border"
-                style={{ width: 30, height: 50, minWidth: 30,    margin: "0 auto" }}
+                style={{ width: 30, height: 50, minWidth: 30, margin: "0 auto" }}
             >
                 <i className="icon-user text-muted" style={{ fontSize: 28 }} />
             </div>
@@ -140,6 +142,7 @@ export default function SicilIndex() {
     const [altFirmaList, setAltFirmaList] = useState([]);
     const [terminalGrupList, setTerminalGrupList] = useState([]);
     const [mesaiPeriyodList, setMesaiPeriyodList] = useState([]);
+    const [yetkiList, setYetkiList] = useState([]);
     const cardNoSetFieldRef = useRef(null);
 
     useEffect(() => {
@@ -156,7 +159,7 @@ export default function SicilIndex() {
             suffixKeyCodes: [9, 13],
             onScan: (scannedCode) => {
                 const fn = cardNoSetFieldRef.current;
-                if (fn) fn('cardNo', scannedCode);
+                if (fn) fn('cardId', scannedCode);
             },
         });
         return () => {
@@ -171,7 +174,15 @@ export default function SicilIndex() {
                 .then((x) => x.data?.data?.list || [])
                 .catch(() => []);
 
-        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod] =
+        const fetchYetki = () =>
+            GetWithToken('Yetki/GetAll')
+                .then((r) => {
+                    const data = r?.data?.data ?? r?.data;
+                    return Array.isArray(data) ? data : [];
+                })
+                .catch(() => []);
+
+        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod, yetki] =
             await Promise.all([
                 fetchOptions('CboFirma/GetAll'),
                 fetchOptions('CboBolum/GetAll'),
@@ -183,6 +194,7 @@ export default function SicilIndex() {
                 fetchOptions('CboAltFirma/GetAll'),
                 fetchOptions('TerminalGroup/GetAll'),
                 fetchOptions('MesaiPeriyodlari/GetAll'),
+                fetchYetki(),
             ]);
 
         setFirmaList(firma.map((x) => ({ id: x.id, text: x.ad || x.Ad })));
@@ -195,6 +207,12 @@ export default function SicilIndex() {
         setAltFirmaList(altFirma.map((x) => ({ id: x.id, text: x.ad || x.Ad })));
         setTerminalGrupList(terminalGrup.map((x) => ({ id: x.id, text: x.ad || x.Ad })));
         setMesaiPeriyodList(mesaiPeriyod.map((x) => ({ id: x.id, text: x.aciklama || x.Aciklama || `${x.id}` })));
+        setYetkiList(
+            (yetki || []).map((x) => ({
+                id: x?.id ?? x?.Id,
+                text: x?.aciklama ?? x?.Aciklama ?? '',
+            })).filter((x) => x.id != null)
+        );
 
         setLoading(false);
     };
@@ -207,15 +225,11 @@ export default function SicilIndex() {
                 const requiredCreateFields = [
                     { key: 'ad', label: 'Ad' },
                     { key: 'soyad', label: 'Soyad' },
-                    { key: 'cardNo', label: 'Card No' },
+                    { key: 'cardId', label: 'Kart No' },
                     { key: 'firma', label: 'Firma' },
                     { key: 'bolum', label: 'Bolüm' },
-                    { key: 'pozisyon', label: 'Pozisyon' },
                     { key: 'gorev', label: 'Görev' },
-                    { key: 'direktorluk', label: 'Direktörlük' },
                     { key: 'yaka', label: 'Yaka' },
-                    { key: 'puantaj', label: 'Puantaj' },
-                    { key: 'altFirma', label: 'Alt Firma' },
                 ];
 
                 const missingFields = requiredCreateFields
@@ -231,31 +245,20 @@ export default function SicilIndex() {
                     ad: v.ad,
                     soyad: v.soyad,
                     fotoBase64: (v.fotoBase64 && v.fotoBase64 !== 'remove') ? v.fotoBase64 : null,
-                    personelNo: v.personelNo,
-                    cardNo: v.cardNo,
+                    cardId: v.cardId,
                     sicilNo: v.sicilNo,
-                    firma: parseInt(v.firma, 10),
-                    bolum: parseInt(v.bolum, 10),
-                    pozisyon: parseInt(v.pozisyon, 10),
-                    gorev: parseInt(v.gorev, 10),
-                    direktorluk: parseInt(v.direktorluk, 10),
-                    yaka: parseInt(v.yaka, 10),
-                    puantaj: parseInt(v.puantaj, 10),
-                    altFirma: parseInt(v.altFirma, 10),
-                    terminalGrubu: v.terminalGrubu ? parseInt(v.terminalGrubu) : null,
-                    mesaiPeriyodu: parseInt(v.mesaiPeriyodu) || 0,
-                    telefon1: v.telefon1,
-                    telefon2: v.telefon2,
-                    cepTelefon: v.cepTelefon,
-                    adres: v.adres,
-                    il: v.il,
-                    ilce: v.ilce,
-                    email: v.email,
+                    firma: v.firma ? parseInt(v.firma, 10) : null,
+                    bolum: v.bolum ? parseInt(v.bolum, 10) : null,
+                    gorev: v.gorev ? parseInt(v.gorev, 10) : null,
+                    yaka: v.yaka ? parseInt(v.yaka, 10) : null,
+                    tanim: v.tanim || 'sicil',
+                    kanGrubu: v.kanGrubu || null,
+                    cinsiyet: v.cinsiyet || null,
+                    yetkiIds: Array.isArray(v.yetkiIds)
+                        ? v.yetkiIds.map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n) && n > 0)
+                        : [],
                     girisTarih: v.girisTarih || null,
                     cikisTarih: v.cikisTarih || null,
-                    dogumTarih: v.dogumTarih || null,
-                    maas: parseInt(v.maas) || 0,
-                    maasTipi: parseInt(v.maasTipi) || 0,
                 };
                 const res = await PostWithToken('Sicil/Create', createData);
                 if (res?.data?.isError) {
@@ -268,28 +271,20 @@ export default function SicilIndex() {
                     ad: v.ad,
                     fotoBase64: v.fotoBase64 === 'remove' ? 'remove' : (v.fotoBase64 || null),
                     soyad: v.soyad,
-                    personelNo: v.personelNo,
                     sicilNo: v.sicilNo,
+                    cardId: v.cardId,
                     firma: v.firma ? parseInt(v.firma) : null,
                     bolum: v.bolum ? parseInt(v.bolum) : null,
-                    pozisyon: v.pozisyon ? parseInt(v.pozisyon) : null,
                     gorev: v.gorev ? parseInt(v.gorev) : null,
-                    direktorluk: v.direktorluk ? parseInt(v.direktorluk) : null,
                     yaka: v.yaka ? parseInt(v.yaka) : null,
-                    puantaj: v.puantaj ? parseInt(v.puantaj) : null,
-                    altFirma: v.altFirma ? parseInt(v.altFirma) : null,
-                    telefon1: v.telefon1,
-                    telefon2: v.telefon2,
-                    cepTelefon: v.cepTelefon,
-                    adres: v.adres,
-                    il: v.il,
-                    ilce: v.ilce,
-                    email: v.email,
+                    tanim: v.tanim || 'sicil',
+                    kanGrubu: v.kanGrubu || null,
+                    cinsiyet: v.cinsiyet || null,
+                    yetkiIds: Array.isArray(v.yetkiIds)
+                        ? v.yetkiIds.map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n) && n > 0)
+                        : [],
                     girisTarih: v.girisTarih || null,
                     cikisTarih: v.cikisTarih || null,
-                    dogumTarih: v.dogumTarih || null,
-                    maas: v.maas ? parseInt(v.maas) : null,
-                    maasTipi: v.maasTipi ? parseInt(v.maasTipi) : null,
                 };
                 const res = await PostWithToken('Sicil/Update', updateData);
                 if (res?.data?.isError) {
@@ -330,31 +325,20 @@ export default function SicilIndex() {
                 ad: d.ad,
                 fotoBase64: d.fotoBase64 || '',
                 soyad: d.soyad,
-                personelNo: d.personelNo,
-                cardNo: '',
+                cardId: `${d.cardId ?? d.CardId ?? ''}`,
                 sicilNo: d.sicilNo,
                 firma: d.firma?.toString() || '',
                 bolum: d.bolum?.toString() || '',
-                pozisyon: d.pozisyon?.toString() || '',
                 gorev: d.gorev?.toString() || '',
-                direktorluk: d.direktorluk?.toString() || '',
                 yaka: d.yaka?.toString() || '',
-                puantaj: d.puantaj?.toString() || '',
-                altFirma: d.altFirma?.toString() || '',
-                terminalGrubu: d.terminalGrubu?.toString() || '',
-                mesaiPeriyodu: d.mesaiPeriyodu?.toString() || '',
-                telefon1: d.telefon1 || '',
-                telefon2: d.telefon2 || '',
-                cepTelefon: d.cepTelefon || '',
-                adres: d.adres || '',
-                il: d.il || '',
-                ilce: d.ilce || '',
-                email: d.email || '',
+                tanim: d.tanim || d.Tanim || 'sicil',
+                yetkiIds: Array.isArray(d.yetkiIds || d.YetkiIds || d.yetkiler || d.Yetkiler)
+                    ? (d.yetkiIds || d.YetkiIds || d.yetkiler || d.Yetkiler).map((x) => `${x}`)
+                    : [],
+                kanGrubu: d.kanGrubu || d.KanGrubu || '',
+                cinsiyet: d.cinsiyet || d.Cinsiyet || '',
                 girisTarih: formatDate(d.girisTarih),
                 cikisTarih: formatDate(d.cikisTarih),
-                dogumTarih: formatDate(d.dogumTarih),
-                maas: d.maas || 0,
-                maasTipi: d.maasTipi || 0,
             });
             setModalOpen(true);
         } catch (e) {
@@ -367,31 +351,18 @@ export default function SicilIndex() {
         ad: '',
         fotoBase64: '',
         soyad: '',
-        personelNo: '',
-        cardNo: '',
+        cardId: '',
         sicilNo: '',
         firma: '',
         bolum: '',
-        pozisyon: '',
         gorev: '',
-        direktorluk: '',
         yaka: '',
-        puantaj: '',
-        altFirma: '',
-        terminalGrubu: '',
-        mesaiPeriyodu: mesaiPeriyodList[0]?.id?.toString() || '',
-        telefon1: '',
-        telefon2: '',
-        cepTelefon: '',
-        adres: '',
-        il: '',
-        ilce: '',
-        email: '',
+        tanim: 'sicil',
+        yetkiIds: [],
+        kanGrubu: '',
+        cinsiyet: '',
         girisTarih: '',
         cikisTarih: '',
-        dogumTarih: '',
-        maas: 0,
-        maasTipi: 0,
     };
 
     const formInitial = initialData || emptyInitial;
@@ -410,6 +381,36 @@ export default function SicilIndex() {
                 placeholder={placeholder}
                 isClearable
                 onChange={(selectedOption) => setFieldValue(name, selectedOption ? selectedOption.value : '')}
+                styles={{
+                    control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        borderRadius: 10,
+                        borderColor: state.isFocused ? '#7c3aed' : '#d0d5dd',
+                        boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.15)' : 'none',
+                    }),
+                    menu: (base) => ({ ...base, zIndex: 9999 }),
+                }}
+            />
+        );
+    };
+
+    const ReactMultiSelectField = ({ name, options, value, setFieldValue, placeholder = 'Seçiniz' }) => {
+        const mappedOptions = toSelectOptions(options);
+        const valueArr = Array.isArray(value) ? value.map((x) => `${x}`) : [];
+        const selected = mappedOptions.filter((x) => valueArr.includes(x.value));
+        return (
+            <Select
+                classNamePrefix="react-select"
+                options={mappedOptions}
+                value={selected}
+                placeholder={placeholder}
+                isMulti
+                closeMenuOnSelect={false}
+                onChange={(selectedOptions) => {
+                    const arr = (selectedOptions || []).map((x) => x.value);
+                    setFieldValue(name, arr);
+                }}
                 styles={{
                     control: (base, state) => ({
                         ...base,
@@ -493,8 +494,12 @@ export default function SicilIndex() {
                                 <Form onSubmit={handleSubmit} className="row g-2">
                                     <Field type="hidden" name="id" />
                                     <div className="col-12 p-3 border rounded-3 bg-light shadow-sm">
-                                        <h6 className="mb-3">Temel Bilgiler</h6>
-                                        <div className="row g-2">
+                                        <h6 className="mb-3">Sicil Bilgileri</h6>
+                                        <div className="row g-3">
+                                            <div className="col-12">
+                                                <label className="form-label">Fotoğraf</label>
+                                                <FotoDropzone value={values.fotoBase64} setFieldValue={setFieldValue} />
+                                            </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Ad</label>
                                                 <Field name="ad" type="text" className="form-control" required />
@@ -504,80 +509,107 @@ export default function SicilIndex() {
                                                 <Field name="soyad" type="text" className="form-control" required />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label">Personel No</label>
-                                                <Field name="personelNo" type="text" className="form-control" />
-                                            </div>
-                                            <div className="col-12 col-md-6">
                                                 <label className="form-label">Sicil No</label>
                                                 <Field name="sicilNo" type="text" className="form-control" />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label">Card No</label>
-                                                <div className="d-flex gap-2 align-items-center">
-                                                    <Field
-                                                        name="cardNo"
-                                                        type="text"
-                                                        className="form-control flex-grow-1"
-                                                        placeholder="Kart okuyucudan okutun veya simüle edin"
-                                                        required
-                                                    />
-                                                    {/* {!formInitial.id && (
-                                                    <Button
-                                                        type="button"
-                                                        color="outline-secondary"
-                                                        size="sm"
-                                                        title="Kart okutmayı simüle et (test)"
-                                                        onClick={() => setFieldValue('cardNo', SIMULATE_CARD_NO)}
-                                                    >
-                                                        <i className="icon-barcode2 me-1" /> Simüle
-                                                    </Button>
-                                                )} */}
-                                                </div>
+                                                <label className="form-label">Kart No</label>
+                                                <Field
+                                                    name="cardId"
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Kart okuyucudan okutun"
+                                                    required
+                                                // disabled={!!formInitial.id}
+                                                />
                                                 {!formInitial.id && (
-                                                    <small className="text-muted">Keyboard wedge okuyucu: Kartı okutun, ID otomatik gelecektir.</small>
+                                                    <small className="text-muted">Kartı okutun, ID otomatik gelecektir.</small>
                                                 )}
                                             </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Firma</label>
+                                                <ReactSelectField name="firma" options={firmaList} value={values.firma} setFieldValue={setFieldValue} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Bölüm</label>
+                                                <ReactSelectField name="bolum" options={bolumList} value={values.bolum} setFieldValue={setFieldValue} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Görev</label>
+                                                <ReactSelectField name="gorev" options={gorevList} value={values.gorev} setFieldValue={setFieldValue} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Yaka</label>
+                                                <ReactSelectField name="yaka" options={yakaList} value={values.yaka} setFieldValue={setFieldValue} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">İşe Giriş Tarihi</label>
+                                                <Field name="girisTarih" type="date" className="form-control" />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Çıkış Tarihi</label>
+                                                <Field name="cikisTarih" type="date" className="form-control" title="Dolu ise işten ayrılmış (Pasif) sayılır" />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Tanım</label>
+                                                <Field as="select" name="tanim" className="form-control">
+                                                    <option value="sicil">Sicil</option>
+                                                    <option value="ziyaretci">Ziyaretçi</option>
+                                                </Field>
+                                            </div>
                                             <div className="col-12">
-                                                <label className="form-label">Fotoğraf</label>
-                                                <FotoDropzone value={values.fotoBase64} setFieldValue={setFieldValue} />
+                                                <label className="form-label">Yetki (Çoklu Seçim)</label>
+                                                <ReactMultiSelectField name="yetkiIds" options={yetkiList} value={values.yetkiIds} setFieldValue={setFieldValue} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Kan Grubu</label>
+                                                <Field as="select" name="kanGrubu" className="form-control">
+                                                    <option value="">Seçiniz</option>
+                                                    <option value="A Rh+">A Rh+</option>
+                                                    <option value="A Rh-">A Rh-</option>
+                                                    <option value="B Rh+">B Rh+</option>
+                                                    <option value="B Rh-">B Rh-</option>
+                                                    <option value="AB Rh+">AB Rh+</option>
+                                                    <option value="AB Rh-">AB Rh-</option>
+                                                    <option value="0 Rh+">0 Rh+</option>
+                                                    <option value="0 Rh-">0 Rh-</option>
+                                                </Field>
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Cinsiyet</label>
+                                                <Field as="select" name="cinsiyet" className="form-control">
+                                                    <option value="">Seçiniz</option>
+                                                    <option value="E">Erkek</option>
+                                                    <option value="K">Kadın</option>
+                                                </Field>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-12 p-3 border rounded-3 bg-white shadow-sm">
-                                        <h6 className="mb-3">Organizasyon Bilgileri</h6>
-                                        <div className="row g-2">
-                                            <div className="col-12 col-md-6"><label className="form-label">Firma</label><ReactSelectField name="firma" options={firmaList} value={values.firma} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Bölüm</label><ReactSelectField name="bolum" options={bolumList} value={values.bolum} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Pozisyon</label><ReactSelectField name="pozisyon" options={pozisyonList} value={values.pozisyon} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Görev</label><ReactSelectField name="gorev" options={gorevList} value={values.gorev} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Direktörlük</label><ReactSelectField name="direktorluk" options={direktorlukList} value={values.direktorluk} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Yaka</label><ReactSelectField name="yaka" options={yakaList} value={values.yaka} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Puantaj</label><ReactSelectField name="puantaj" options={puantajList} value={values.puantaj} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Alt Firma</label><ReactSelectField name="altFirma" options={altFirmaList} value={values.altFirma} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Terminal Grubu</label><ReactSelectField name="terminalGrubu" options={terminalGrupList} value={values.terminalGrubu} setFieldValue={setFieldValue} /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Mesai Periyodu</label><ReactSelectField name="mesaiPeriyodu" options={mesaiPeriyodList} value={values.mesaiPeriyodu} setFieldValue={setFieldValue} /></div>
-                                        </div>
-                                    </div>
-                                    <div className="col-12 p-3 border rounded-3 bg-white shadow-sm">
-                                        <h6 className="mb-3">İletişim</h6>
-                                        <div className="row g-2">
-                                            <div className="col-12 col-md-6"><label className="form-label">Telefon 1</label><Field name="telefon1" type="text" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Telefon 2</label><Field name="telefon2" type="text" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Cep Telefon</label><Field name="cepTelefon" type="text" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">E-posta</label><Field name="email" type="email" className="form-control" /></div>
-                                            <div className="col-12"><label className="form-label">Adres</label><Field as="textarea" name="adres" className="form-control" rows="2" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">İl</label><Field name="il" type="text" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">İlçe</label><Field name="ilce" type="text" className="form-control" /></div>
-                                        </div>
-                                    </div>
-                                    <div className="col-12 p-3 border rounded-3 bg-white shadow-sm">
-                                        <h6 className="mb-3">Tarih ve Finans</h6>
-                                        <div className="row g-2">
-                                            <div className="col-12 col-md-6"><label className="form-label">Giriş Tarihi</label><Field name="girisTarih" type="date" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Çıkış Tarihi</label><Field name="cikisTarih" type="date" className="form-control" title="Dolu ise işten ayrılmış (Pasif) sayılır" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Doğum Tarihi</label><Field name="dogumTarih" type="date" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Maaş</label><Field name="maas" type="number" className="form-control" /></div>
-                                            <div className="col-12 col-md-6"><label className="form-label">Maaş Tipi</label><Field name="maasTipi" type="number" className="form-control" /></div>
+                                        <h6 className="mb-3">Kart Talimatları</h6>
+                                        <div className="row g-3">
+                                            <div className="col-12">
+                                                <div className="row g-2">
+                                                    <div className="col-12 col-md-6">
+                                                        <div className="border rounded-3 p-3 h-100 bg-light">
+                                                            <div className="fw-semibold mb-2">Ön Yüz</div>
+                                                            <ul className="mb-0 small text-muted ps-3">
+                                                                <li>Kartı okuyucuya okutarak kart numarasını otomatik doldurun.</li>
+                                                                <li>Okutma sonrası yetki seçimini kontrol edin.</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 col-md-6">
+                                                        <div className="border rounded-3 p-3 h-100 bg-light">
+                                                            <div className="fw-semibold mb-2">Arka Yüz</div>
+                                                            <ul className="mb-0 small text-muted ps-3">
+                                                                <li>Kartı personel ile eşleştirmek için Card No alanı dolu olmalıdır.</li>
+                                                                <li>Gerekirse kartı tekrar okutun.</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-12">
@@ -705,8 +737,8 @@ export default function SicilIndex() {
                                                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyFilters(); } }}
                                             />
                                         </div>
-                                        <div className="col-12 col-md-6 col-lg" style={{position:"inherit"}}>
-                                            <div style={{position:"absolute",width:200}}>
+                                        <div className="col-12 col-md-6 col-lg" style={{ position: "inherit" }}>
+                                            <div style={{ position: "absolute", width: 200 }}>
 
 
                                                 <label className="form-label small text-muted mb-1">Firma</label>
@@ -731,27 +763,27 @@ export default function SicilIndex() {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-12 col-md-6 col-lg" style={{position:"inherit"}}>
-                                             <div style={{position:"absolute",width:200}}>
-                                            <label className="form-label small text-muted mb-1">Bölüm</label>
-                                            <Select
-                                                classNamePrefix="react-select"
-                                                options={bolumFilterOptions}
-                                                value={bolumFilterOptions.find((x) => x.value === filterBolum) || bolumFilterOptions[0]}
-                                                placeholder="Tümü"
-                                                isClearable={false}
-                                                onChange={(o) => setFilterBolum(o?.value ?? '')}
-                                                styles={{
-                                                    control: (base, state) => ({
-                                                        ...base,
-                                                        minHeight: 32,
-                                                        fontSize: '0.875rem',
-                                                        borderRadius: 6,
-                                                        borderColor: state.isFocused ? '#7c3aed' : '#dee2e6',
-                                                    }),
-                                                    menu: (base) => ({ ...base, zIndex: 9999 }),
-                                                }}
-                                            />
+                                        <div className="col-12 col-md-6 col-lg" style={{ position: "inherit" }}>
+                                            <div style={{ position: "absolute", width: 200 }}>
+                                                <label className="form-label small text-muted mb-1">Bölüm</label>
+                                                <Select
+                                                    classNamePrefix="react-select"
+                                                    options={bolumFilterOptions}
+                                                    value={bolumFilterOptions.find((x) => x.value === filterBolum) || bolumFilterOptions[0]}
+                                                    placeholder="Tümü"
+                                                    isClearable={false}
+                                                    onChange={(o) => setFilterBolum(o?.value ?? '')}
+                                                    styles={{
+                                                        control: (base, state) => ({
+                                                            ...base,
+                                                            minHeight: 32,
+                                                            fontSize: '0.875rem',
+                                                            borderRadius: 6,
+                                                            borderColor: state.isFocused ? '#7c3aed' : '#dee2e6',
+                                                        }),
+                                                        menu: (base) => ({ ...base, zIndex: 9999 }),
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-12 col-md-6 col-lg" style={{ position: 'inherit' }}>
@@ -800,17 +832,19 @@ export default function SicilIndex() {
                             Pagination={{ pageNumber: 1, pageSize: 20 }}
                             UseGetPagination
                             Headers={[
-                                { header: 'Foto', dynamicButton: (item) => (
-                                    <FotoThumb
-                                        src={item.fotoBase64}
-                                        alt={`${item.ad || ''} ${item.soyad || ''}`.trim()}
-                                        onClick={() => { setFotoModalSrc(item.fotoBase64); setFotoModalOpen(true); }}
-                                    />
-                                ) },
+                                {
+                                    header: 'Foto', dynamicButton: (item) => (
+                                        <FotoThumb
+                                            src={item.fotoBase64}
+                                            alt={`${item.ad || ''} ${item.soyad || ''}`.trim()}
+                                            onClick={() => { setFotoModalSrc(item.fotoBase64); setFotoModalOpen(true); }}
+                                        />
+                                    )
+                                },
                                 { header: '\u00A0', dynamicButton: (item) => (item.cikisTarih != null && item.cikisTarih !== '') ? <span data-sicil-pasif="1" aria-hidden style={{ display: 'none' }} /> : <span aria-hidden style={{ display: 'none' }} /> },
                                 ['ad', 'Ad'],
                                 ['soyad', 'Soyad'],
-                           
+                                ['cardId', 'Kart No'],
                                 ['sicilNo', 'Sicil No'],
                                 ['firmaAd', 'Firma'],
                                 ['bolumAd', 'Bölüm'],
