@@ -3,6 +3,8 @@ import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import ReactSelect from 'react-select';
 import { GetWithToken } from '../../api/crud';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import ExcelJS from 'exceljs';
 
 const formatTarih = (val) => {
     if (!val) return '-';
@@ -32,9 +34,36 @@ const formatSure = (dakika) => {
     return `${m} dk`;
 };
 
+const tableCols = [
+    { key: 'tarih', label: 'Tarih', format: (row) => row.mesaiTarih ? new Date(row.mesaiTarih).toLocaleDateString('tr-TR') : new Date(row.giris).toLocaleDateString('tr-TR') },
+    { key: 'giris', label: 'Giriş Saati', format: (row) => formatSaat(row.giris) },
+    { key: 'girisTerminalAd', label: 'Giriş Terminali', format: (row) => row.girisTerminalAd || '-' },
+    { key: 'cikis', label: 'Çıkış Saati', format: (row) => formatSaat(row.cikis) },
+    { key: 'cikisTerminalAd', label: 'Çıkış Terminali', format: (row) => row.cikisTerminalAd || '-' },
+    { key: 'mesaiSuresi', label: 'İçeride Kalma', format: (row) => formatSure(row.mesaiSuresi) },
+    { key: 'normalMesai', label: 'Normal Mesai', format: (row) => formatSure(row.normalMesai) },
+    { key: 'fazlaMesai', label: 'Fazla Mesai', format: (row) => formatSure(row.fazlaMesai) },
+    { key: 'aciklama', label: 'Açıklama', format: (row) => row.mesaiAciklama || row.izinTipAd || '-' },
+];
+
+const tableColsTerminal = [
+    { key: 'sicilAd', label: 'Personel', format: (row) => row.sicilAd || '-' },
+    { key: 'tarih', label: 'Tarih', format: (row) => row.mesaiTarih ? new Date(row.mesaiTarih).toLocaleDateString('tr-TR') : new Date(row.giris).toLocaleDateString('tr-TR') },
+    { key: 'giris', label: 'Giriş Saati', format: (row) => formatSaat(row.giris) },
+    { key: 'girisTerminalAd', label: 'Giriş Terminali', format: (row) => row.girisTerminalAd || '-' },
+    { key: 'cikis', label: 'Çıkış Saati', format: (row) => formatSaat(row.cikis) },
+    { key: 'cikisTerminalAd', label: 'Çıkış Terminali', format: (row) => row.cikisTerminalAd || '-' },
+];
+
 export default function PuantajIndex() {
+    const [activeTab, setActiveTab] = useState('personel');
+
     const [sicilList, setSicilList] = useState([]);
     const [selectedSicil, setSelectedSicil] = useState(null);
+
+    const [terminalList, setTerminalList] = useState([]);
+    const [selectedTerminal, setSelectedTerminal] = useState(null);
+
     const [baslangic, setBaslangic] = useState(() => {
         const d = new Date();
         d.setDate(1);
@@ -44,11 +73,13 @@ export default function PuantajIndex() {
         const d = new Date();
         return d.toISOString().split('T')[0];
     });
+
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         loadSicilList();
+        loadTerminalList();
     }, []);
 
     const loadSicilList = async () => {
@@ -61,16 +92,43 @@ export default function PuantajIndex() {
         }
     };
 
-    const sorgula = async () => {
+    const loadTerminalList = async () => {
+        try {
+            const res = await GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 500 });
+            const list = res?.data?.data?.list || [];
+            setTerminalList(list.map((x) => ({ value: x.id ?? x.Id, label: x.name ?? x.Name ?? `Terminal ${x.id ?? x.Id}` })));
+        } catch (e) {
+            console.error('Terminal listesi yüklenemedi', e);
+        }
+    };
+
+    const sorgulaPersonel = async () => {
         if (!selectedSicil?.value) return;
         setLoading(true);
         try {
             const res = await GetWithToken('Tasnifleme/GetBySicilAndDateRange', {
                 sicilId: selectedSicil.value,
                 baslangic,
-                bitis
+                bitis,
             });
-            setData(res?.data || null);
+            setData({ ...res?.data, tabType: 'personel' });
+        } catch (e) {
+            console.error('Puantaj yüklenemedi', e);
+            setData(null);
+        }
+        setLoading(false);
+    };
+
+    const sorgulaTerminal = async () => {
+        if (!selectedTerminal?.value) return;
+        setLoading(true);
+        try {
+            const res = await GetWithToken('Tasnifleme/GetByTerminalAndDateRange', {
+                terminalId: selectedTerminal.value,
+                baslangic,
+                bitis,
+            });
+            setData({ ...res?.data, tabType: 'terminal' });
         } catch (e) {
             console.error('Puantaj yüklenemedi', e);
             setData(null);
@@ -80,13 +138,68 @@ export default function PuantajIndex() {
 
     const list = data?.list || [];
 
+    const exportToExcel = () => {
+        if (!list.length) return;
+        const cols = data?.tabType === 'terminal' ? tableColsTerminal : tableCols;
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Puantaj Geçişleri');
+        sheet.addRow(cols.map((c) => c.label)).font = { bold: true };
+        list.forEach((row) => {
+            sheet.addRow(cols.map((c) => (c.format ? c.format(row) : row[c.key] ?? '')));
+        });
+        sheet.columns.forEach((col, i) => { col.width = 18; });
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `puantaj-gecisleri-${baslangic}-${bitis}.xlsx`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+    };
+
+    const renderTable = (columns) => (
+        <div className="table-responsive">
+            <table className="table table-bordered table-hover">
+                <thead className="table-light">
+                    <tr>
+                        {columns.map((c) => (
+                            <th key={c.key}>{c.label}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {list.length === 0 ? (
+                        <tr>
+                            <td colSpan={columns.length} className="text-center">
+                                Kayıt bulunamadı.
+                            </td>
+                        </tr>
+                    ) : (
+                        list.map((row) => (
+                            <tr key={row.id}>
+                                {columns.map((c) => (
+                                    <td key={c.key}>{c.format ? c.format(row) : (row[c.key] ?? '-')}</td>
+                                ))}
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+
+    const showResults = data && (activeTab === 'personel' ? data.tabType === 'personel' : data.tabType === 'terminal');
+    const labelName = data?.tabType === 'personel' ? data.sicilAd : data?.terminalAd;
+
     return (
         <Layout>
             <PageHeader
                 title="Puantaj - Giriş Çıkış Detay"
                 map={[
                     { url: 'sicil', name: 'Sicil' },
-                    { url: 'sicil/puantaj', name: 'Puantaj' }
+                    { url: 'sicil/puantaj', name: 'Puantaj' },
                 ]}
             />
             <div className="content p-4">
@@ -95,100 +208,99 @@ export default function PuantajIndex() {
                         <h5 className="mb-0">Giriş Çıkış Detay Sorgulama</h5>
                     </div>
                     <div className="card-body">
-                        <div className="row align-items-end mb-4">
-                            <div className="col-md-4 mb-2">
-                                <label className="form-label">Personel (Sicil)</label>
-                                <ReactSelect
-                                    options={sicilList}
-                                    value={selectedSicil}
-                                    onChange={setSelectedSicil}
-                                    placeholder="Personel seçin..."
-                                    isClearable
-                                    isSearchable
-                                />
-                            </div>
-                            <div className="col-md-2 mb-2">
-                                <label className="form-label">Başlangıç Tarihi</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    value={baslangic}
-                                    onChange={(e) => setBaslangic(e.target.value)}
-                                />
-                            </div>
-                            <div className="col-md-2 mb-2">
-                                <label className="form-label">Bitiş Tarihi</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    value={bitis}
-                                    onChange={(e) => setBitis(e.target.value)}
-                                />
-                            </div>
-                            <div className="col-md-2 mb-2">
-                                <button
-                                    className="btn btn-primary w-100"
-                                    onClick={sorgula}
-                                    disabled={!selectedSicil?.value || loading}
+                        <Nav tabs className="nav-tabs mb-3">
+                            <NavItem>
+                                <NavLink
+                                    active={activeTab === 'personel'}
+                                    onClick={() => setActiveTab('personel')}
+                                    style={{ cursor: 'pointer' }}
                                 >
-                                    {loading ? (
-                                        <span className="spinner-border spinner-border-sm" />
-                                    ) : (
-                                        <i className="icon-search4" />
-                                    )}{' '}
-                                    Sorgula
-                                </button>
-                            </div>
-                        </div>
+                                    Personel Bazlı Geçişler
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    active={activeTab === 'terminal'}
+                                    onClick={() => setActiveTab('terminal')}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    Terminal Bazlı Geçişler
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
 
-                        {data && (
+                        <TabContent activeTab={activeTab}>
+                            <TabPane tabId="personel" className="pt-2">
+                                <div className="row align-items-end mb-4">
+                                    <div className="col-md-4 mb-2">
+                                        <label className="form-label">Personel (Sicil)</label>
+                                        <ReactSelect
+                                            options={sicilList}
+                                            value={selectedSicil}
+                                            onChange={setSelectedSicil}
+                                            placeholder="Personel seçin..."
+                                            isClearable
+                                            isSearchable
+                                        />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <label className="form-label">Başlangıç Tarihi</label>
+                                        <input type="date" className="form-control" value={baslangic} onChange={(e) => setBaslangic(e.target.value)} />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <label className="form-label">Bitiş Tarihi</label>
+                                        <input type="date" className="form-control" value={bitis} onChange={(e) => setBitis(e.target.value)} />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <button className="btn btn-primary w-100" onClick={sorgulaPersonel} disabled={!selectedSicil?.value || loading}>
+                                            {loading ? <span className="spinner-border spinner-border-sm" /> : <i className="icon-search4" />} Sorgula
+                                        </button>
+                                    </div>
+                                </div>
+                            </TabPane>
+
+                            <TabPane tabId="terminal" className="pt-2">
+                                <div className="row align-items-end mb-4">
+                                    <div className="col-md-4 mb-2">
+                                        <label className="form-label">Terminal</label>
+                                        <ReactSelect
+                                            options={terminalList}
+                                            value={selectedTerminal}
+                                            onChange={setSelectedTerminal}
+                                            placeholder="Terminal seçin..."
+                                            isClearable
+                                            isSearchable
+                                        />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <label className="form-label">Başlangıç Tarihi</label>
+                                        <input type="date" className="form-control" value={baslangic} onChange={(e) => setBaslangic(e.target.value)} />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <label className="form-label">Bitiş Tarihi</label>
+                                        <input type="date" className="form-control" value={bitis} onChange={(e) => setBitis(e.target.value)} />
+                                    </div>
+                                    <div className="col-md-2 mb-2">
+                                        <button className="btn btn-primary w-100" onClick={sorgulaTerminal} disabled={!selectedTerminal?.value || loading}>
+                                            {loading ? <span className="spinner-border spinner-border-sm" /> : <i className="icon-search4" />} Sorgula
+                                        </button>
+                                    </div>
+                                </div>
+                            </TabPane>
+                        </TabContent>
+
+                        {showResults && (
                             <>
-                                <div className="mb-3">
-                                    <strong>Personel:</strong> {data.sicilAd} |{' '}
-                                    <strong>Tarih Aralığı:</strong> {data.baslangic} - {data.bitis} |{' '}
-                                    <strong>Kayıt:</strong> {list.length} adet
+                                <div className="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <strong>{data?.tabType === 'personel' ? 'Personel' : 'Terminal'}:</strong> {labelName} |{' '}
+                                        <strong>Tarih Aralığı:</strong> {data.baslangic} - {data.bitis} | <strong>Kayıt:</strong> {list.length} adet
+                                    </div>
+                                    <button type="button" className="btn btn-sm btn-success" onClick={exportToExcel} disabled={!list.length}>
+                                        <i className="icon-file-excel me-1" /> Excel
+                                    </button>
                                 </div>
-
-                                <div className="table-responsive">
-                                    <table className="table table-bordered table-hover">
-                                        <thead className="table-light">
-                                            <tr>
-                                                <th>Tarih</th>
-                                                <th>Giriş Saati</th>
-                                                <th>Çıkış Saati</th>
-                                                <th>İçeride Kalma</th>
-                                                <th>Normal Mesai</th>
-                                                <th>Fazla Mesai</th>
-                                                <th>Açıklama</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {list.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan="7" className="text-center">
-                                                        Kayıt bulunamadı.
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                list.map((row) => (
-                                                    <tr key={row.id}>
-                                                        <td>
-                                                            {row.mesaiTarih
-                                                                ? new Date(row.mesaiTarih).toLocaleDateString('tr-TR')
-                                                                : new Date(row.giris).toLocaleDateString('tr-TR')}
-                                                        </td>
-                                                        <td>{formatSaat(row.giris)}</td>
-                                                        <td>{formatSaat(row.cikis)}</td>
-                                                        <td>{formatSure(row.mesaiSuresi)}</td>
-                                                        <td>{formatSure(row.normalMesai)}</td>
-                                                        <td>{formatSure(row.fazlaMesai)}</td>
-                                                        <td>{row.mesaiAciklama || row.izinTipAd || '-'}</td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                {renderTable(data?.tabType === 'terminal' ? tableColsTerminal : tableCols)}
                             </>
                         )}
                     </div>

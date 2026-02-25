@@ -19,9 +19,12 @@ import '../pages/yonetimsel-araclar/tanimlamalar/tanimlamalar-tabs.css'
 import "../layout/global_assets/css/icons/fontawesome/styles.min.css"
 import 'react-toastify/dist/ReactToastify.css';
 import "react-image-crop/dist/ReactCrop.css";
+import 'react-time-picker/dist/TimePicker.css';
 import { useEffect, useState } from 'react'
 import { GetNoneToken, GetWithToken } from './api/crud'
 import { SignalRProvider } from '../components/SignalRContext';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 
 //import Index from "/yonetimsel-araclar/destek-kayitlari/[...id]";
 

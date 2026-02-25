@@ -13,6 +13,10 @@ import { GetWithToken, PostWithToken } from '../../api/crud';
 
 export default function TerminalListesiIndex() {
     const [modalOpen, setModalOpen] = useState(false);
+    const [yetkililerModalOpen, setYetkililerModalOpen] = useState(false);
+    const [yetkililerList, setYetkililerList] = useState([]);
+    const [yetkililerLoading, setYetkililerLoading] = useState(false);
+    const [selectedTerminalName, setSelectedTerminalName] = useState('');
     const [initialData, setInitialData] = useState(null);
     const [refreshDatatable, setRefreshDatatable] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -89,6 +93,23 @@ export default function TerminalListesiIndex() {
             if (res?.data?.isError) { AlertFunction('Hata', res.data.message); return; }
             setRefreshDatatable(new Date());
         } catch (e) { AlertFunction('Başarısız işlem', e?.response?.data?.message || 'Bir hata oluştu'); }
+    };
+
+    const openYetkililerModal = async (data) => {
+        const terminalId = data?.id ?? data?.Id;
+        const terminalName = data?.name ?? data?.Name ?? 'Terminal';
+        setSelectedTerminalName(terminalName);
+        setYetkililerModalOpen(true);
+        setYetkililerList([]);
+        setYetkililerLoading(true);
+        try {
+            const res = await GetWithToken('Terminaller/GetYetkililerByTerminalId', { terminalId });
+            setYetkililerList(res?.data?.data || []);
+        } catch (e) {
+            setYetkililerList([]);
+        } finally {
+            setYetkililerLoading(false);
+        }
     };
 
     const editData = async (data) => {
@@ -216,6 +237,39 @@ export default function TerminalListesiIndex() {
                     </Formik>
                 </ModalBody>
             </Modal>
+            <Modal isOpen={yetkililerModalOpen} toggle={() => setYetkililerModalOpen(false)}>
+                <AppModalHeader toggle={() => setYetkililerModalOpen(false)}>
+                    Yetkililer - {selectedTerminalName}
+                </AppModalHeader>
+                <ModalBody>
+                    {yetkililerLoading ? (
+                        <div className="text-center py-4">Yükleniyor...</div>
+                    ) : yetkililerList.length === 0 ? (
+                        <div className="text-muted text-center py-4">Bu terminalde geçiş yetkisi olan personel bulunamadı.</div>
+                    ) : (
+                        <div className="table-responsive">
+                            <table className="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Ad Soyad</th>
+                                        <th>Sicil No</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {yetkililerList.map((p, idx) => (
+                                        <tr key={idx}>
+                                            <td>{p.adSoyad || `${p.ad || ''} ${p.soyad || ''}`.trim() || '-'}</td>
+                                            <td>{p.sicilNo ?? '-'}</td>
+                                          
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </ModalBody>
+            </Modal>
             <Layout>
                 <PageHeader
                     title="Terminal Listesi"
@@ -322,7 +376,27 @@ export default function TerminalListesiIndex() {
                             DataUrl={dataUrlWithFilters}
                             Pagination={{ pageNumber: 1, pageSize: 20 }}
                             UseGetPagination
-                            Headers={[['name', 'Terminal Adı'], ['model', 'Model'], ['port', 'Port'], ['sonGecen', 'Son Geçen'], ['grupId', 'Grup Id']]}
+                            Headers={[
+                                ['name', 'Terminal Adı'],
+                                ['model', 'Model'],
+                                ['port', 'Port'],
+                                ['sonGecen', 'Son Geçen'],
+                                {
+                                    header: 'Yetkililer',
+                                    dynamicButton: (item) => {
+                                        const count = item?.yetkiliSayisi ?? item?.YetkiliSayisi ?? 0;
+                                        return (
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-primary"
+                                                onClick={() => openYetkililerModal(item)}
+                                            >
+                                                Yetkililer({count})
+                                            </button>
+                                        );
+                                    },
+                                },
+                            ]}
                             Title="Terminal Listesi"
                             Description="PDKS terminal cihazlarını yönetebilirsiniz."
                             HeaderButton={{ text: 'Terminal Ekle', action: () => { setInitialData(null); setModalOpen(true); } }}
