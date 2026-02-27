@@ -1,0 +1,149 @@
+.pageArea {
+  padding-top: 0.25rem;
+}
+
+.mainCard {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.mainHeader {
+  border-bottom: 1px solid #eef2f7;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.toolbarButtons {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.panelCard {
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 0.9rem;
+  background: #ffffff;
+  height: 100%;
+}
+
+.softBluePanel {
+  background: #f4f8ff;
+}
+
+.sectionTitle {
+  margin-bottom: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 7px;
+  background: #2f80ed;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.canvasShell {
+  border: 1px solid #e5eaf3;
+  border-radius: 10px;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #f2f5fb 100%);
+  overflow: auto;
+}
+
+.canvasStage {
+  border-radius: 8px;
+  position: absolute;
+}
+
+.rulerBoard {
+  position: relative;
+}
+
+.rulerCorner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: #f0f4fb;
+  border: 1px solid #dbe3f0;
+  border-right: 0;
+  border-bottom: 0;
+  font-size: 9px;
+  color: #5f6b7a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rulerTop {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  height: 24px;
+  right: 0;
+  background: #f0f4fb;
+  border: 1px solid #dbe3f0;
+  border-bottom: 0;
+}
+
+.rulerLeft {
+  position: absolute;
+  left: 0;
+  top: 24px;
+  width: 24px;
+  bottom: 0;
+  background: #f0f4fb;
+  border: 1px solid #dbe3f0;
+  border-right: 0;
+}
+
+.rulerTick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 7px;
+  background: #8ea0b8;
+}
+
+.rulerTickMid {
+  height: 11px;
+}
+
+.rulerTickMajor {
+  height: 16px;
+  background: #5a6a7f;
+}
+
+.rulerLabel {
+  position: absolute;
+  top: 16px;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #435064;
+}
+
+.rulerTickY {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  width: 7px;
+  background: #8ea0b8;
+}
+
+.rulerTickMidY {
+  width: 11px;
+}
+
+.rulerTickMajorY {
+  width: 16px;
+  background: #5a6a7f;
+}
+
+.rulerLabelY {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  color: #435064;
+}

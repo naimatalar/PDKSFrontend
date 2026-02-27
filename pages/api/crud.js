@@ -16,7 +16,7 @@ export const fileRoot = apiConstant + "/root/";
 export const GetWithToken = async (url, params) => {
     const config = {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
             Authorization: 'Bearer ' + localStorage.getItem("dgbrdconftknserr")
         }
     }
@@ -33,7 +33,7 @@ export const GetAntegraSystemNoneToken = async (url) => {
     const headers =
     {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
         }
     }
     try {
@@ -47,7 +47,7 @@ export const GetTrandyolBrand = async (url) => {
     const headers =
     {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
         }
     }
     try {
@@ -63,7 +63,7 @@ export const GetNoneToken = async (url) => {
     const headers =
     {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
         }
     }
     try {
@@ -79,7 +79,7 @@ export const PostWithToken = async (url, data) => {
     const headers =
     {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
             Authorization: 'Bearer ' + localStorage.getItem("dgbrdconftknserr")
         },
         onUploadProgress: progressEvent => {
@@ -130,7 +130,7 @@ export const PostNoneToken = async (url, data) => {
     const headers =
     {
         headers: {
-            'Content-Type': 'application/Json',
+            'Content-Type': 'application/json',
         }
     }
     try {

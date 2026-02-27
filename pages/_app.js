@@ -15,7 +15,7 @@ import '../layout/assets/css/layout.min.css'
 import '../layout/assets/css/tree.css'
 import '../layout/assets/css/menu-pro.css'
 import '../components/datatable-pro.css'
-import '../pages/yonetimsel-araclar/tanimlamalar/tanimlamalar-tabs.css'
+import '../pages/tanimlamalar/sicil-tanimlamalari/tanimlamalar-tabs.css'
 import "../layout/global_assets/css/icons/fontawesome/styles.min.css"
 import 'react-toastify/dist/ReactToastify.css';
 import "react-image-crop/dist/ReactCrop.css";

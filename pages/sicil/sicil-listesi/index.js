@@ -84,6 +84,18 @@ const FotoDropzone = ({ value, setFieldValue, disabled }) => {
 };
 
 const SIMULATE_CARD_NO = '12345678';
+const MM_TO_PX = 4;
+
+const DEFAULT_CARD_DESIGN = {
+    boyutId: 'std',
+    genislik: 85,
+    yukseklik: 54,
+    background: '#ffffff',
+    designImage: null,
+    designImagePrint: false,
+    designImageOpacity: 0.95,
+    elements: [],
+};
 
 const FotoThumb = ({ src, alt, onClick }) => {
     if (!src) {
@@ -131,6 +143,10 @@ export default function SicilIndex() {
     const [filterSonDurum, setFilterSonDurum] = useState('');
     const [fotoModalOpen, setFotoModalOpen] = useState(false);
     const [fotoModalSrc, setFotoModalSrc] = useState(null);
+    const [kartModalOpen, setKartModalOpen] = useState(false);
+    const [kartPerson, setKartPerson] = useState(null);
+    const [kartDesign, setKartDesign] = useState(DEFAULT_CARD_DESIGN);
+    const [kartDesignLoading, setKartDesignLoading] = useState(false);
 
     const [firmaList, setFirmaList] = useState([]);
     const [bolumList, setBolumList] = useState([]);
@@ -450,6 +466,154 @@ export default function SicilIndex() {
         setRefreshDatatable(new Date());
     };
 
+    const getPersonFieldValue = (person, key) => {
+        if (!person) return '-';
+        const ad = person.ad ?? person.Ad ?? '';
+        const soyad = person.soyad ?? person.Soyad ?? '';
+        const adSoyad = `${ad} ${soyad}`.trim();
+        const map = {
+            adSoyad,
+            ad,
+            soyad,
+            sicilNo: person.sicilNo ?? person.SicilNo ?? '-',
+            personelNo: person.personelNo ?? person.PersonelNo ?? '-',
+            kartNo: person.cardId ?? person.CardId ?? '-',
+            bolum: person.bolumAd ?? person.BolumAd ?? '-',
+            bolumAd: person.bolumAd ?? person.BolumAd ?? '-',
+            departman: person.direktorlukAd ?? person.DirektorlukAd ?? '-',
+            direktorlukAd: person.direktorlukAd ?? person.DirektorlukAd ?? '-',
+            unvan: person.pozisyonAd ?? person.PozisyonAd ?? person.gorevAd ?? person.GorevAd ?? '-',
+            pozisyonAd: person.pozisyonAd ?? person.PozisyonAd ?? '-',
+            gorevAd: person.gorevAd ?? person.GorevAd ?? '-',
+            firma: person.firmaAd ?? person.FirmaAd ?? '-',
+            firmaAd: person.firmaAd ?? person.FirmaAd ?? '-',
+            email: person.email ?? person.Email ?? '-',
+            telefon1: person.telefon1 ?? person.Telefon1 ?? '-',
+            cepTelefon: person.cepTelefon ?? person.CepTelefon ?? '-',
+        };
+        return map[key] ?? '-';
+    };
+
+    const getPersonPhotoSrc = (person) =>
+        person?.fotoBase64 ??
+        person?.FotoBase64 ??
+        person?.foto ??
+        person?.Foto ??
+        person?.image ??
+        person?.Image ??
+        null;
+
+    const loadCardDesign = async () => {
+        if (kartDesignLoading) return;
+        setKartDesignLoading(true);
+        try {
+            const listRes = await GetWithToken('CardDesign/GetAll');
+            const listData = listRes?.data?.data;
+            const list = Array.isArray(listData) ? listData : [];
+            if (list.length === 0) {
+                setKartDesign(DEFAULT_CARD_DESIGN);
+                return;
+            }
+            const firstId = list[0]?.id ?? list[0]?.Id;
+            const detailRes = await GetWithToken('CardDesign/GetById', { id: firstId });
+            const d = detailRes?.data?.data;
+            const designJson = d?.designJson ?? d?.DesignJson;
+            if (!designJson) {
+                setKartDesign(DEFAULT_CARD_DESIGN);
+                return;
+            }
+            const parsed = JSON.parse(designJson);
+            setKartDesign({ ...DEFAULT_CARD_DESIGN, ...parsed });
+        } catch (_) {
+            setKartDesign(DEFAULT_CARD_DESIGN);
+        } finally {
+            setKartDesignLoading(false);
+        }
+    };
+
+    const openKartModal = (item) => {
+        setKartPerson(item || null);
+        setKartModalOpen(true);
+        loadCardDesign();
+    };
+
+    const yazdirKart = () => {
+        if (!kartPerson) return;
+        const design = kartDesign || DEFAULT_CARD_DESIGN;
+        const widthMm = design.boyutId === 'custom' ? (design.genislik || 85) : (design.genislik || 85);
+        const heightMm = design.boyutId === 'custom' ? (design.yukseklik || 54) : (design.yukseklik || 54);
+
+        const escapeHtml = (value) =>
+            String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        const elementsHtml = (Array.isArray(design.elements) ? design.elements : []).map((el) => {
+            const x = (el.x || 0) / MM_TO_PX;
+            const y = (el.y || 0) / MM_TO_PX;
+            const w = (el.width || 20) / MM_TO_PX;
+            const h = (el.height || 10) / MM_TO_PX;
+            const color = el.color || '#111111';
+            const bgColor = el.type === 'line' ? 'transparent' : (el.bgColor || 'transparent');
+            const border = el.type === 'line' ? 'none' : `1px solid ${el.borderColor || 'transparent'}`;
+            const textAlign = el.textAlign || 'left';
+            const fontWeight = el.fontWeight === 'bold' ? '700' : '400';
+            const fontSizePt = Math.max(6, Number(el.fontSize) || 11);
+
+            let content = '';
+            if (el.type === 'field') content = escapeHtml(getPersonFieldValue(kartPerson, el.fieldKey));
+            if (el.type === 'text') content = escapeHtml(el.text || 'Metin');
+            if (el.type === 'barcode') content = escapeHtml(el.text || '|||| ||| ||||');
+            if (el.type === 'photo') {
+                const photoSrc = getPersonPhotoSrc(kartPerson);
+                content = photoSrc
+                    ? `<img src="${escapeHtml(photoSrc)}" alt="Personel Fotoğrafı" style="width:100%;height:100%;object-fit:cover;" />`
+                    : 'Fotoğraf';
+            }
+
+            if (el.type === 'line') {
+                return `<div style="position:absolute;left:${x}mm;top:${y}mm;width:${w}mm;height:0;border-top:0.35mm solid ${el.bgColor || '#111111'};"></div>`;
+            }
+
+            return `<div style="position:absolute;left:${x}mm;top:${y}mm;width:${w}mm;height:${h}mm;color:${color};background:${bgColor};border:${border};text-align:${textAlign};font-size:${fontSizePt}pt;font-weight:${fontWeight};display:flex;align-items:center;justify-content:${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};padding:0.4mm;box-sizing:border-box;overflow:hidden;">${content}</div>`;
+        }).join('');
+        const printDesignImageHtml = design.designImage && design.designImagePrint
+            ? `<img src="${escapeHtml(design.designImage)}" alt="Kart Tasarım Görseli" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:${design.designImageOpacity ?? 0.95};pointer-events:none;z-index:0;" />`
+            : '';
+
+        const printHtml = `<!doctype html>
+<html><head><meta charset="utf-8" />
+<title>Personel Kartı</title>
+<style>
+@page { size: ${widthMm}mm ${heightMm}mm; margin: 0; }
+html, body { margin:0; padding:0; width:${widthMm}mm; height:${heightMm}mm; }
+</style>
+</head>
+<body>
+<div style="position:relative;width:${widthMm}mm;height:${heightMm}mm;background:${design.background || '#ffffff'};overflow:hidden;">
+${printDesignImageHtml}
+${elementsHtml}
+</div>
+</body></html>`;
+
+        const w = window.open('', '_blank', 'width=900,height=700');
+        if (!w) {
+            AlertFunction('Hata', 'Yazdırma penceresi açılamadı.');
+            return;
+        }
+        w.document.open();
+        w.document.write(printHtml);
+        w.document.close();
+        w.focus();
+        setTimeout(() => {
+            w.print();
+            w.close();
+        }, 250);
+    };
+
     const clearFilters = () => {
         setFilterAd('');
         setFilterSoyad('');
@@ -634,6 +798,110 @@ export default function SicilIndex() {
                             style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
                         />
                     ) : null}
+                </ModalBody>
+            </Modal>
+            <Modal isOpen={kartModalOpen} toggle={() => setKartModalOpen(false)} size="lg" centered>
+                <AppModalHeader toggle={() => setKartModalOpen(false)}>
+                    <h5 className="mb-0 fw-semibold">Personel Kartı</h5>
+                </AppModalHeader>
+                <ModalBody>
+                    <div className="d-flex justify-content-center mb-3">
+                        <div
+                            style={{
+                                width: `${(kartDesign?.genislik || 85)}mm`,
+                                height: `${(kartDesign?.yukseklik || 54)}mm`,
+                                position: 'relative',
+                                border: '0.2mm solid #cfd4da',
+                                background: kartDesign?.background || '#fff',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            {kartDesign?.designImage && (
+                                <img
+                                    src={kartDesign.designImage}
+                                    alt="Tasarım arkaplan"
+                                    style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        opacity: kartDesign.designImageOpacity ?? 0.95,
+                                        pointerEvents: 'none',
+                                        userSelect: 'none',
+                                        zIndex: 0,
+                                    }}
+                                />
+                            )}
+                            {(Array.isArray(kartDesign?.elements) ? kartDesign.elements : []).map((el, index) => {
+                                const xMm = (el.x || 0) / MM_TO_PX;
+                                const yMm = (el.y || 0) / MM_TO_PX;
+                                const wMm = (el.width || 20) / MM_TO_PX;
+                                const hMm = (el.height || 10) / MM_TO_PX;
+                                const fontPt = Math.max(6, Number(el.fontSize) || 11);
+                                const personPhotoSrc = getPersonPhotoSrc(kartPerson);
+                                let text = '';
+                                if (el.type === 'field') text = getPersonFieldValue(kartPerson, el.fieldKey);
+                                if (el.type === 'text') text = el.text || 'Metin';
+                                if (el.type === 'barcode') text = el.text || '|||| ||| ||||';
+                                if (el.type === 'photo') text = 'Fotoğraf';
+
+                                if (el.type === 'line') {
+                                    return (
+                                        <div
+                                            key={el.id || `${index}-line`}
+                                            style={{
+                                                position: 'absolute',
+                                                left: `${xMm}mm`,
+                                                top: `${yMm}mm`,
+                                                width: `${wMm}mm`,
+                                                height: 0,
+                                                borderTop: `0.35mm solid ${el.bgColor || '#111111'}`,
+                                                zIndex: index + 1,
+                                            }}
+                                        />
+                                    );
+                                }
+                                return (
+                                    <div
+                                        key={el.id || `${index}-el`}
+                                        style={{
+                                            position: 'absolute',
+                                            left: `${xMm}mm`,
+                                            top: `${yMm}mm`,
+                                            width: `${wMm}mm`,
+                                            height: `${hMm}mm`,
+                                            color: el.color || '#111111',
+                                            background: el.bgColor || 'transparent',
+                                            border: `1px solid ${el.borderColor || 'transparent'}`,
+                                            textAlign: el.textAlign || 'left',
+                                            fontSize: `${fontPt}pt`,
+                                            fontWeight: el.fontWeight || 'normal',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: el.textAlign === 'center' ? 'center' : el.textAlign === 'right' ? 'flex-end' : 'flex-start',
+                                            padding: '0.4mm',
+                                            boxSizing: 'border-box',
+                                            overflow: 'hidden',
+                                            zIndex: index + 1,
+                                        }}
+                                    >
+                                        {el.type === 'photo' && personPhotoSrc ? (
+                                            <img src={personPhotoSrc} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <span className="text-truncate w-100">{text}</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="d-flex justify-content-end gap-2">
+                        <button type="button" className="btn btn-light" onClick={() => setKartModalOpen(false)}>Kapat</button>
+                        <button type="button" className="btn btn-primary" onClick={yazdirKart}>
+                            <i className="icon-printer me-1" /> Yazdır
+                        </button>
+                    </div>
                 </ModalBody>
             </Modal>
             <Layout>
@@ -850,6 +1118,18 @@ export default function SicilIndex() {
                                 ['bolumAd', 'Bölüm'],
                                 ['pozisyonAd', 'Pozisyon'],
                                 ['email', 'E-posta'],
+                                {
+                                    header: 'Kart',
+                                    dynamicButton: (item) => (
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-primary"
+                                            onClick={() => openKartModal(item)}
+                                        >
+                                            <i className='fa fa-eye'></i>
+                                        </button>
+                                    ),
+                                },
                             ]}
                             Title="Sicil Listesi"
                             Description="Personel sicil kayıtlarını listeleyebilir, ekleyebilir ve düzenleyebilirsiniz."

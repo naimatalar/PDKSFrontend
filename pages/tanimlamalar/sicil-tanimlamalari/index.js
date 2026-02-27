@@ -11,7 +11,7 @@ import PuantajTanimlama from './components/PuantajTanimlama';
 import YakaTanimlama from './components/YakaTanimlama';
 import AltFirmaTanimlama from './components/AltFirmaTanimlama';
 import TerminalGrupTanimlama from './components/TerminalGrupTanimlama';
-import MesaiPeriyodlariTanimlama from './components/MesaiPeriyodlariTanimlama';
+
 
 const TABS = [
     { id: 'firma', label: 'Firma', icon: 'icon-office', Component: FirmaTanimlama },
@@ -23,7 +23,7 @@ const TABS = [
     { id: 'yaka', label: 'Yaka', icon: 'icon-medal', Component: YakaTanimlama },
     { id: 'alt-firma', label: 'Alt Firma', icon: 'icon-store2', Component: AltFirmaTanimlama },
     { id: 'terminal-grup', label: 'Terminal Grubu', icon: 'icon-lan', Component: TerminalGrupTanimlama },
-    { id: 'mesai-periyodlari', label: 'Mesai Periyotları', icon: 'icon-alarm', Component: MesaiPeriyodlariTanimlama },
+   
 ];
 
 export default function TanimlamalarIndex() {
