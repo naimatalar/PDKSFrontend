@@ -976,7 +976,7 @@ ${elementsHtml}
                                         onChange={onDesignImageSelect}
                                     />
                                     <small className="text-muted d-block mt-1">
-                                        "Basılsın" seçili değilse görsel sadece önizlemede görünür.
+                                        `Basılsın` seçili değilse görsel sadece önizlemede görünür.
                                     </small>
                                     <div className="form-check mt-2">
                                         <input
