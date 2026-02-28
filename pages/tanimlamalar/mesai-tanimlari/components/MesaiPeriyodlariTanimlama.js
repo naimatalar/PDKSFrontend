@@ -75,7 +75,7 @@ export default function MesaiPeriyodlariTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="MesaiPeriyodlari/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="MesaiPeriyodlari/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['aciklama', 'Açıklama'], ['varsayilan', 'Varsayılan'], ['mesaiPeriyodlariUyeleriSayisi', 'Üye Sayısı']]}
                     Title="Mesai Periyotları Listesi" Description="Sicil kayıtlarında kullanılacak mesai periyodu tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Mesai Periyodu Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

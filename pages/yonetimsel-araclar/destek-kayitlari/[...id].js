@@ -156,7 +156,7 @@ export default function Index(props) {
             //     // setParentId(null);
             //   },
             // }}
-            Pagination={{ pageSize: 10, pageNumber: 1, id: projectId }}
+            Pagination={{ pageSize: 10, PageNumber: 0, id: projectId }}
             // EditButton={editData}
             //  DeleteButton={deleteData}
             HideButtons

@@ -184,7 +184,7 @@ export default function SicilIndex() {
     }, [modalOpen, initialData?.id]);
 
     const start = async () => {
-        const pagination = { PageNumber: 1, PageSize: 500 };
+        const pagination = { PageNumber: 0, PageSize: 500 };
         const fetchOptions = (url) =>
             GetWithToken(url, pagination)
                 .then((x) => x.data?.data?.list || [])
@@ -270,9 +270,10 @@ export default function SicilIndex() {
                     tanim: v.tanim || 'sicil',
                     kanGrubu: v.kanGrubu || null,
                     cinsiyet: v.cinsiyet || null,
-                    yetkiIds: Array.isArray(v.yetkiIds)
-                        ? v.yetkiIds.map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n) && n > 0)
-                        : [],
+                    yetkiId: (() => {
+                        const parsed = parseInt(v.yetkiId, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     girisTarih: v.girisTarih || null,
                     cikisTarih: v.cikisTarih || null,
                 };
@@ -296,9 +297,10 @@ export default function SicilIndex() {
                     tanim: v.tanim || 'sicil',
                     kanGrubu: v.kanGrubu || null,
                     cinsiyet: v.cinsiyet || null,
-                    yetkiIds: Array.isArray(v.yetkiIds)
-                        ? v.yetkiIds.map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n) && n > 0)
-                        : [],
+                    yetkiId: (() => {
+                        const parsed = parseInt(v.yetkiId, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     girisTarih: v.girisTarih || null,
                     cikisTarih: v.cikisTarih || null,
                 };
@@ -348,9 +350,13 @@ export default function SicilIndex() {
                 gorev: d.gorev?.toString() || '',
                 yaka: d.yaka?.toString() || '',
                 tanim: d.tanim || d.Tanim || 'sicil',
-                yetkiIds: Array.isArray(d.yetkiIds || d.YetkiIds || d.yetkiler || d.Yetkiler)
-                    ? (d.yetkiIds || d.YetkiIds || d.yetkiler || d.Yetkiler).map((x) => `${x}`)
-                    : [],
+                yetkiId: (() => {
+                    const direct = d.yetkiId ?? d.YetkiId;
+                    if (direct != null) return `${direct}`;
+                    const yetkiStr = d.yetkistr ?? d.Yetkistr ?? '';
+                    const firstToken = `${yetkiStr}`.split(',').map((x) => x.trim()).find((x) => /^\d+$/.test(x));
+                    return firstToken || '';
+                })(),
                 kanGrubu: d.kanGrubu || d.KanGrubu || '',
                 cinsiyet: d.cinsiyet || d.Cinsiyet || '',
                 girisTarih: formatDate(d.girisTarih),
@@ -374,7 +380,7 @@ export default function SicilIndex() {
         gorev: '',
         yaka: '',
         tanim: 'sicil',
-        yetkiIds: [],
+        yetkiId: '',
         kanGrubu: '',
         cinsiyet: '',
         girisTarih: '',
@@ -397,36 +403,6 @@ export default function SicilIndex() {
                 placeholder={placeholder}
                 isClearable
                 onChange={(selectedOption) => setFieldValue(name, selectedOption ? selectedOption.value : '')}
-                styles={{
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        borderRadius: 10,
-                        borderColor: state.isFocused ? '#7c3aed' : '#d0d5dd',
-                        boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.15)' : 'none',
-                    }),
-                    menu: (base) => ({ ...base, zIndex: 9999 }),
-                }}
-            />
-        );
-    };
-
-    const ReactMultiSelectField = ({ name, options, value, setFieldValue, placeholder = 'Seçiniz' }) => {
-        const mappedOptions = toSelectOptions(options);
-        const valueArr = Array.isArray(value) ? value.map((x) => `${x}`) : [];
-        const selected = mappedOptions.filter((x) => valueArr.includes(x.value));
-        return (
-            <Select
-                classNamePrefix="react-select"
-                options={mappedOptions}
-                value={selected}
-                placeholder={placeholder}
-                isMulti
-                closeMenuOnSelect={false}
-                onChange={(selectedOptions) => {
-                    const arr = (selectedOptions || []).map((x) => x.value);
-                    setFieldValue(name, arr);
-                }}
                 styles={{
                     control: (base, state) => ({
                         ...base,
@@ -722,8 +698,8 @@ ${elementsHtml}
                                                 </Field>
                                             </div>
                                             <div className="col-12">
-                                                <label className="form-label">Yetki (Çoklu Seçim)</label>
-                                                <ReactMultiSelectField name="yetkiIds" options={yetkiList} value={values.yetkiIds} setFieldValue={setFieldValue} />
+                                                <label className="form-label">Yetki</label>
+                                                <ReactSelectField name="yetkiId" options={yetkiList} value={values.yetkiId} setFieldValue={setFieldValue} />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Kan Grubu</label>
@@ -1097,7 +1073,7 @@ ${elementsHtml}
                         <DataTable
                             Refresh={refreshDatatable}
                             DataUrl={dataUrlWithFilters}
-                            Pagination={{ pageNumber: 1, pageSize: 20 }}
+                            Pagination={{ PageNumber: 0, pageSize: 20 }}
                             UseGetPagination
                             Headers={[
                                 {

@@ -66,7 +66,7 @@ export default function FirmaTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboFirma/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboFirma/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Firma Adı'], ['firmaKodu', 'Firma Kodu'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Firma Listesi" Description="Sicil kayıtlarında kullanılacak firma tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Firma Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

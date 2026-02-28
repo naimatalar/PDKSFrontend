@@ -65,7 +65,7 @@ export default function YakaTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboYaka/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboYaka/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Yaka Adı'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Yaka Listesi" Description="Sicil kayıtlarında kullanılacak yaka tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Yaka Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

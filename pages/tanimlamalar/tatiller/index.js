@@ -52,7 +52,7 @@ export default function TatillerIndex() {
 
     const yukle = async () => {
         try {
-            const res = await GetWithToken('TatilTipleri/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('TatilTipleri/GetAll', { PageNumber: 0, PageSize: 500 });
             setListe(res?.data?.data?.list || res?.data?.data || []);
         } catch (e) {
             setListe([]);

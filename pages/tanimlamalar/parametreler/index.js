@@ -104,7 +104,7 @@ export default function ParametrelerIndex() {
 
     const yukle = async () => {
         try {
-            const res = await GetWithToken('Parameter/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('Parameter/GetAll', { PageNumber: 0, PageSize: 500 });
             const list = res?.data?.data?.list || res?.data?.data || [];
             const map = {};
             list.forEach((p) => {

@@ -65,7 +65,7 @@ export default function PuantajTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboPuantaj/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboPuantaj/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Puantaj Adı'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Puantaj Listesi" Description="Sicil kayıtlarında kullanılacak puantaj tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Puantaj Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

@@ -70,8 +70,8 @@ export default function MesaiBirimleriTanimlama() {
     const yukleListe = async () => {
         try {
             const [mesaiRes, dinlenmeRes] = await Promise.all([
-                GetWithToken('Mesailer/GetAll', { PageNumber: 1, PageSize: 500 }),
-                GetWithToken('Dinlenmeler/GetAll', { PageNumber: 1, PageSize: 500 }),
+                GetWithToken('Mesailer/GetAll', { PageNumber: 0, PageSize: 500 }),
+                GetWithToken('Dinlenmeler/GetAll', { PageNumber: 0, PageSize: 500 }),
             ]);
             setMesaiList(mesaiRes?.data?.data?.list || mesaiRes?.data?.data || []);
             setDinlenmeList(dinlenmeRes?.data?.data?.list || dinlenmeRes?.data?.data || []);

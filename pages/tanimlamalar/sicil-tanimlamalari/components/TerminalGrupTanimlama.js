@@ -68,7 +68,7 @@ export default function TerminalGrupTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="TerminalGroup/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="TerminalGroup/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Terminal Grubu Adı'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Terminal Grubu Listesi" Description="Sicil kayıtlarında kullanılacak terminal grubu tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Terminal Grubu Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

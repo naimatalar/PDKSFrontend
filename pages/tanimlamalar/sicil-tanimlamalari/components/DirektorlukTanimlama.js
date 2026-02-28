@@ -65,7 +65,7 @@ export default function DirektorlukTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboDirektorluk/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboDirektorluk/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Direktörlük Adı'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Direktörlük Listesi" Description="Sicil kayıtlarında kullanılacak direktörlük tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Direktörlük Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

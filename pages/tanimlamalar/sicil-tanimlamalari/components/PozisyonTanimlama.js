@@ -65,7 +65,7 @@ export default function PozisyonTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboPozisyon/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboPozisyon/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Pozisyon Adı'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Pozisyon Listesi" Description="Sicil kayıtlarında kullanılacak pozisyon tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Pozisyon Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

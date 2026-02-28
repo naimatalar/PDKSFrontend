@@ -36,7 +36,7 @@ export default function ToplamSureIndex() {
 
     const loadOptions = async () => {
         setOptionsLoading(true);
-        const pagination = { PageNumber: 1, PageSize: 500 };
+        const pagination = { PageNumber: 0, PageSize: 500 };
         const fetchOpt = (url) =>
             GetWithToken(url, pagination)
                 .then((r) => r.data?.data?.list || [])

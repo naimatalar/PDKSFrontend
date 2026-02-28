@@ -179,7 +179,7 @@ export default function MonitorIndex() {
                                 Refresh={refresh}
                                 DataUrl="DahuaAccess/RecentEvents"
                                 Data={null}
-                                Pagination={{ pageNumber: 1, pageSize: 20 }}
+                                Pagination={{ PageNumber: 0, pageSize: 20 }}
                                 UseGetPagination
                                 Headers={[
                                     ['terminalName', 'Terminal'],

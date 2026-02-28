@@ -9,7 +9,7 @@ import { Formik, Form, Field } from 'formik';
 import ReactSelect from 'react-select';
 import AsyncSelect from 'react-select/async';
 
-const pagination = { PageNumber: 1, PageSize: 500 };
+const pagination = { PageNumber: 0, PageSize: 500 };
 
 const toOption = (x, labelKey = 'ad') => ({
     value: x?.id ?? x?.Id,

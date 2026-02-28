@@ -105,7 +105,7 @@ export default function TumZiyaretcilerPage() {
                         <DataTable
                             Refresh={refreshKey}
                             DataUrl="Ziyaretci/GetAll"
-                            Pagination={{ pageNumber: 1, pageSize: 20 }}
+                            Pagination={{ PageNumber: 0, pageSize: 20 }}
                             UseGetPagination
                             Headers={headers}
                             Title="Tüm Ziyaretçiler"

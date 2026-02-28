@@ -17,8 +17,8 @@ export default function TerminalYetkiTanimlamaIndex() {
 
     const yukleGruplarVeTerminaller = async () => {
         const [gruplarRes, terminallerRes] = await Promise.all([
-            GetWithToken('TerminalGroup/GetAll', { PageNumber: 1, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
-            GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
+            GetWithToken('TerminalGroup/GetAll', { PageNumber: 0, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
+            GetWithToken('Terminaller/GetAll', { PageNumber: 0, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
         ]);
         setTerminalGrupList((gruplarRes.data?.data?.list || []).map((m) => ({ id: m.id, ad: m.ad || m.Ad })));
         setTerminalList((terminallerRes.data?.data?.list || []).map((m) => ({ id: m.id, name: m.name || m.Name, port: m.port || m.Port })));

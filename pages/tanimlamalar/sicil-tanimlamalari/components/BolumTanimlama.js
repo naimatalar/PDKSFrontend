@@ -16,7 +16,7 @@ export default function BolumTanimlama() {
     const [mesaiPeriyodList, setMesaiPeriyodList] = useState([]);
 
     useEffect(() => {
-        GetWithToken('MesaiPeriyodlari/GetAll', { PageNumber: 1, PageSize: 500 })
+        GetWithToken('MesaiPeriyodlari/GetAll', { PageNumber: 0, PageSize: 500 })
             .then((x) => setMesaiPeriyodList((x.data?.data?.list || []).map((m) => ({ id: m.id, text: m.aciklama || m.Aciklama || m.id }))))
             .catch(() => {});
         setLoading(false);
@@ -82,7 +82,7 @@ export default function BolumTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboBolum/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboBolum/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Bölüm Adı'], ['bolumKodu', 'Bölüm Kodu'], ['email', 'E-posta'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Bölüm Listesi" Description="Sicil kayıtlarında kullanılacak bölüm tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Bölüm Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

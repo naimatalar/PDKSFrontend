@@ -24,8 +24,8 @@ export default function MesaiProgramiTanimlama() {
     const yukle = async () => {
         try {
             const [mesaiRes, grupRes] = await Promise.all([
-                GetWithToken('Mesailer/GetAll', { PageNumber: 1, PageSize: 500 }),
-                GetWithToken('MesaiGruplari/GetAll', { PageNumber: 1, PageSize: 500 }),
+                GetWithToken('Mesailer/GetAll', { PageNumber: 0, PageSize: 500 }),
+                GetWithToken('MesaiGruplari/GetAll', { PageNumber: 0, PageSize: 500 }),
             ]);
             setMesaiList(mesaiRes?.data?.data?.list || mesaiRes?.data?.data || []);
             setGrupList(grupRes?.data?.data?.list || grupRes?.data?.data || []);

@@ -69,7 +69,7 @@ export default function AltFirmaTanimlama() {
                 </ModalBody>
             </Modal>
             <div className="card">
-                <DataTable Refresh={refreshDatatable} DataUrl="CboAltFirma/GetAll" Pagination={{ pageNumber: 1, pageSize: 20 }} UseGetPagination
+                <DataTable Refresh={refreshDatatable} DataUrl="CboAltFirma/GetAll" Pagination={{ PageNumber: 0, pageSize: 20 }} UseGetPagination
                     Headers={[['ad', 'Alt Firma Adı'], ['altFirmaKodu', 'Alt Firma Kodu'], ['firmaKodu', 'Firma Kodu'], ['sicilSayisi', 'Sicil Sayısı']]}
                     Title="Alt Firma Listesi" Description="Sicil kayıtlarında kullanılacak alt firma tanımlarını yönetebilirsiniz."
                     HeaderButton={{ text: 'Alt Firma Ekle', action: () => { setInitialData(null); setModalOpen(true); } }} EditButton={editData} DeleteButton={deleteData}

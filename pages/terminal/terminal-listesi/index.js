@@ -33,10 +33,10 @@ export default function TerminalListesiIndex() {
     const [portList, setPortList] = useState([]);
 
     useEffect(() => {
-        GetWithToken('TerminalGroup/GetAll', { PageNumber: 1, PageSize: 500 })
+        GetWithToken('TerminalGroup/GetAll', { PageNumber: 0, PageSize: 500 })
             .then((x) => setTerminalGrupList((x.data?.data?.list || []).map((m) => ({ id: m.id, text: m.ad || m.Ad || m.id }))))
             .catch(() => {});
-        GetWithToken('CboFirma/GetAll', { PageNumber: 1, PageSize: 500 })
+        GetWithToken('CboFirma/GetAll', { PageNumber: 0, PageSize: 500 })
             .then((x) => setFirmaList((x.data?.data?.list || []).map((m) => ({ id: m.id, text: m.ad || m.Ad || m.id }))))
             .catch(() => {});
         GetWithToken('Terminaller/GetCreateOptions')
@@ -50,7 +50,7 @@ export default function TerminalListesiIndex() {
                 setPortList(d.portList || []);
             })
             .catch(() => {});
-        GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 500 })
+        GetWithToken('Terminaller/GetAll', { PageNumber: 0, PageSize: 500 })
             .then((x) => {
                 const list = x.data?.data?.list || [];
                 setTerminalListForFilter(list.map((m) => ({ id: m.id ?? m.Id, text: m.name ?? m.Name ?? `${m.id ?? m.Id}` })));
@@ -374,7 +374,7 @@ export default function TerminalListesiIndex() {
                         <DataTable
                             Refresh={refreshDatatable}
                             DataUrl={dataUrlWithFilters}
-                            Pagination={{ pageNumber: 1, pageSize: 20 }}
+                            Pagination={{ PageNumber: 0, pageSize: 20 }}
                             UseGetPagination
                             Headers={[
                                 ['name', 'Terminal Adı'],

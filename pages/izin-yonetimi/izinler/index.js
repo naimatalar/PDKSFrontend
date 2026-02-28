@@ -35,7 +35,7 @@ export default function IzinlerPage() {
     const dataUrl = 'Sicil/GetAll?SonDurum=true';
 
     useEffect(() => {
-        GetWithToken('IzinTipleri/GetAll', { PageNumber: 1, PageSize: 500 })
+        GetWithToken('IzinTipleri/GetAll', { PageNumber: 0, PageSize: 500 })
             .then((res) => {
                 const list = res?.data?.data?.list ?? res?.data?.list ?? [];
                 setIzinTipleri(Array.isArray(list) ? list : []);
@@ -74,7 +74,7 @@ export default function IzinlerPage() {
     const selectAll = useCallback(async () => {
         setActionLoading(true);
         try {
-            const res = await GetWithToken('Sicil/GetAll', { PageNumber: 1, PageSize: 5000, SonDurum: 'true' });
+            const res = await GetWithToken('Sicil/GetAll', { PageNumber: 0, PageSize: 5000, SonDurum: 'true' });
             const list = res?.data?.data?.list ?? res?.data?.list ?? [];
             const ids = (Array.isArray(list) ? list : []).map((x) => x?.id ?? x?.Id).filter(Boolean);
             setSelectedSicilIds(new Set(ids));
@@ -130,7 +130,12 @@ export default function IzinlerPage() {
             toast.success(`İzin eklendi. Toplam ${ok} kayıt.`);
             setRefreshKey(Date.now());
         } catch (e) {
-            toast.error(e?.response?.data?.message ?? 'İzin eklenemedi.');
+            const msg = e?.response?.data?.message ?? 'İzin eklenemedi.';
+            if (String(msg).toLowerCase().includes('zaten izin kaydı')) {
+                toast.warning(msg);
+            } else {
+                toast.error(msg);
+            }
         } finally {
             setActionLoading(false);
             izinEkleSubmittingRef.current = false;
@@ -337,7 +342,7 @@ export default function IzinlerPage() {
                         <DataTable
                             Refresh={refreshKey}
                             DataUrl={dataUrl}
-                            Pagination={{ pageNumber: 1, pageSize: 20 }}
+                            Pagination={{ PageNumber: 0, pageSize: 20 }}
                             UseGetPagination
                             Headers={pdksHeaders}
                             HideButtons

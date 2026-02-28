@@ -25,7 +25,7 @@ export default function TerminalGrubuIndex() {
 
     const yukleBaslangic = async () => {
         const [gruplarRes, yetkiRes] = await Promise.all([
-            GetWithToken('TerminalGroup/GetAll', { PageNumber: 1, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
+            GetWithToken('TerminalGroup/GetAll', { PageNumber: 0, PageSize: 500 }).catch(() => ({ data: { data: { list: [] } } })),
             GetWithToken('Yetki/GetAll').catch(() => ({ data: { data: [] } })),
         ]);
         setTerminalGrupList((gruplarRes.data?.data?.list || []).map((m) => ({ id: m.id, ad: m.ad || m.Ad })));

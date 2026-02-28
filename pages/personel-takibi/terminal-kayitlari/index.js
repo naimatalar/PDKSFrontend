@@ -385,11 +385,13 @@ export default function TerminalKayitlariIndex() {
                                                         <td>{formatTarihSaat(row.eventTime)}</td>
                                                         <td>
                                                             <span
-                                                                className={
-                                                                    row.funcCode === 0
-                                                                        ? 'badge bg-success'
-                                                                        : 'badge bg-warning text-dark'
-                                                                }
+                                                                className={`badge ${
+                                                                    row.girisCikis === 'Giriş'
+                                                                        ? 'bg-success'
+                                                                        : row.girisCikis === 'Çıkış'
+                                                                            ? 'bg-warning text-dark'
+                                                                            : 'bg-secondary'
+                                                                }`}
                                                             >
                                                                 {row.girisCikis}
                                                             </span>

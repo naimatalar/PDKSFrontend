@@ -73,7 +73,7 @@ export default function PlanGerceklesenIndex() {
 
     const loadOptions = async () => {
         setOptionsLoading(true);
-        const pagination = { PageNumber: 1, PageSize: 500 };
+        const pagination = { PageNumber: 0, PageSize: 500 };
         const fetchOpt = (url) =>
             GetWithToken(url, pagination)
                 .then((r) => r.data?.data?.list || [])
@@ -99,7 +99,7 @@ export default function PlanGerceklesenIndex() {
 
     const loadIzinTipleri = async () => {
         try {
-            const res = await GetWithToken('IzinTipleri/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('IzinTipleri/GetAll', { PageNumber: 0, PageSize: 500 });
             const list = res?.data?.data?.list || [];
             setIzinTipleri(list);
         } catch {

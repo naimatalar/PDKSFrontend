@@ -52,7 +52,7 @@ export default function DataTable({
 
 
             if (Pagination) {
-                const paginationParams = { PageNumber: Pagination.pageNumber || 1, PageSize: Pagination.pageSize || 20 };
+                const paginationParams = { PageNumber: Pagination.pageNumber || 0, PageSize: Pagination.pageSize || 20 };
                 const d = UseGetPagination
                     ? await GetWithToken(DataUrl, paginationParams).then(x => x.data)
                     : await PostWithToken(DataUrl, Pagination).then(x => x.data);

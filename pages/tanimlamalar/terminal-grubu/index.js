@@ -22,7 +22,7 @@ export default function TerminalGrubuIndex() {
 
     const yukleGruplar = async () => {
         try {
-            const res = await GetWithToken('TerminalGroup/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('TerminalGroup/GetAll', { PageNumber: 0, PageSize: 500 });
             const d = res?.data?.data;
             const list = Array.isArray(d?.list) ? d.list : Array.isArray(d?.List) ? d.List : Array.isArray(d) ? d : [];
             setGrupListe(list);
@@ -37,7 +37,7 @@ export default function TerminalGrubuIndex() {
 
     const yukleTerminaller = async () => {
         try {
-            const res = await GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 1000 });
+            const res = await GetWithToken('Terminaller/GetAll', { PageNumber: 0, PageSize: 1000 });
             const d = res?.data?.data;
             const list = Array.isArray(d?.list) ? d.list : Array.isArray(d?.List) ? d.List : Array.isArray(d) ? d : [];
             setTerminalListe(list);
@@ -52,7 +52,7 @@ export default function TerminalGrubuIndex() {
 
     const yukleDetay = async () => {
         try {
-            const res = await GetWithToken('TerminalRelation/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('TerminalRelation/GetAll', { PageNumber: 0, PageSize: 500 });
             const d = res?.data?.data;
             const list = Array.isArray(d?.list) ? d.list : Array.isArray(d?.List) ? d.List : Array.isArray(d) ? d : [];
             setDetayListe(list);

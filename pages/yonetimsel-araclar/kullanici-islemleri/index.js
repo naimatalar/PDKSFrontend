@@ -156,6 +156,7 @@ export default function Index() {
                                         name="password"
                                         type="text"
                                         className="form-control"
+                                        minLength={3}
                                         required={!hiddenPassordField}
                                         disabled={false}
                                     />

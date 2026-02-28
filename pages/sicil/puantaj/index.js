@@ -5,6 +5,7 @@ import ReactSelect from 'react-select';
 import { GetWithToken } from '../../api/crud';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import ExcelJS from 'exceljs';
+import { toast } from 'react-toastify';
 
 const formatTarih = (val) => {
     if (!val) return '-';
@@ -77,6 +78,17 @@ export default function PuantajIndex() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const isTerminalDateRangeValid = (startStr, endStr) => {
+        if (!startStr || !endStr) return false;
+        const start = new Date(startStr);
+        const end = new Date(endStr);
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return false;
+        if (end < start) return false;
+        const maxEnd = new Date(start);
+        maxEnd.setMonth(maxEnd.getMonth() + 1);
+        return end <= maxEnd;
+    };
+
     useEffect(() => {
         loadSicilList();
         loadTerminalList();
@@ -84,7 +96,7 @@ export default function PuantajIndex() {
 
     const loadSicilList = async () => {
         try {
-            const res = await GetWithToken('Sicil/GetAll', { PageNumber: 1, PageSize: 2000 });
+            const res = await GetWithToken('Sicil/GetAll', { PageNumber: 0, PageSize: 2000 });
             const list = res?.data?.data?.list || [];
             setSicilList(list.map((x) => ({ value: x.id, label: `${x.ad || ''} ${x.soyad || ''} (${x.personelNo || x.sicilNo || x.id})`.trim() })));
         } catch (e) {
@@ -94,7 +106,7 @@ export default function PuantajIndex() {
 
     const loadTerminalList = async () => {
         try {
-            const res = await GetWithToken('Terminaller/GetAll', { PageNumber: 1, PageSize: 500 });
+            const res = await GetWithToken('Terminaller/GetAll', { PageNumber: 0, PageSize: 500 });
             const list = res?.data?.data?.list || [];
             setTerminalList(list.map((x) => ({ value: x.id ?? x.Id, label: x.name ?? x.Name ?? `Terminal ${x.id ?? x.Id}` })));
         } catch (e) {
@@ -121,6 +133,14 @@ export default function PuantajIndex() {
 
     const sorgulaTerminal = async () => {
         if (!selectedTerminal?.value) return;
+        if (!baslangic || !bitis) {
+            toast.warning('Başlangıç ve bitiş tarihi zorunludur.');
+            return;
+        }
+        if (!isTerminalDateRangeValid(baslangic, bitis)) {
+            toast.warning('Terminal Bazlı Geçişler için tarih aralığı en fazla 1 ay olabilir.');
+            return;
+        }
         setLoading(true);
         try {
             const res = await GetWithToken('Tasnifleme/GetByTerminalAndDateRange', {
@@ -137,6 +157,7 @@ export default function PuantajIndex() {
     };
 
     const list = data?.list || [];
+    const terminalRangeInvalid = activeTab === 'terminal' && !isTerminalDateRangeValid(baslangic, bitis);
 
     const exportToExcel = () => {
         if (!list.length) return;
@@ -281,10 +302,15 @@ export default function PuantajIndex() {
                                         <input type="date" className="form-control" value={bitis} onChange={(e) => setBitis(e.target.value)} />
                                     </div>
                                     <div className="col-md-2 mb-2">
-                                        <button className="btn btn-primary w-100" onClick={sorgulaTerminal} disabled={!selectedTerminal?.value || loading}>
+                                        <button className="btn btn-primary w-100" onClick={sorgulaTerminal} disabled={!selectedTerminal?.value || loading || terminalRangeInvalid}>
                                             {loading ? <span className="spinner-border spinner-border-sm" /> : <i className="icon-search4" />} Sorgula
                                         </button>
                                     </div>
+                                    {terminalRangeInvalid && (
+                                        <div className="col-12">
+                                            <small className="text-danger">Terminal Bazlı Geçişler için tarih aralığı en fazla 1 ay olmalıdır.</small>
+                                        </div>
+                                    )}
                                 </div>
                             </TabPane>
                         </TabContent>

@@ -72,8 +72,8 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
         const load = async () => {
             try {
                 const [izinRes, tatilRes] = await Promise.all([
-                    GetWithToken('IzinTipleri/GetAll', { PageNumber: 1, PageSize: 500 }),
-                    GetWithToken('TatilTipleri/GetAll', { PageNumber: 1, PageSize: 500 }),
+                    GetWithToken('IzinTipleri/GetAll', { PageNumber: 0, PageSize: 500 }),
+                    GetWithToken('TatilTipleri/GetAll', { PageNumber: 0, PageSize: 500 }),
                 ]);
                 setIzinTipleri(izinRes?.data?.data?.list ?? []);
                 setTatilTipleri(tatilRes?.data?.data?.list ?? []);
@@ -190,6 +190,12 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
             toast.warning('Personel bilgisi yok.');
             return;
         }
+        const hasIzinOnDate = (tarihStr) => (izinMap[tarihStr] || []).length > 0;
+        const formatWarnDate = (tarihStr) => {
+            const d = new Date(tarihStr);
+            return Number.isNaN(d.getTime()) ? tarihStr : d.toLocaleDateString('tr-TR');
+        };
+
         const tipId = parseInt(values.izinTipId, 10);
         if (!tipId) {
             toast.warning('Lütfen İzin Tipi seçiniz.');
@@ -203,6 +209,10 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
             const tarihStr = values.izinTarihi;
             if (!tarihStr) {
                 toast.warning('İzin tarihi giriniz veya takvimden seçiniz.');
+                return;
+            }
+            if (hasIzinOnDate(tarihStr)) {
+                toast.warning(`${adSoyad || 'Bu kişi'} için ${formatWarnDate(tarihStr)} tarihine ait zaten izin kaydı bulunuyor.`);
                 return;
             }
             const basMins = minsFromMidnight(basaat || '00:00');
@@ -223,7 +233,7 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
                     saatlikUcret: 0,
                     mailSended: 0,
                 });
-                toast.success('Saatlik izin eklendi.');
+                toast.success('İzin eklendi.');
                 await refreshTakvim();
             } catch (e) {
                 toast.error(e?.response?.data?.message || 'İzin eklenemedi.');
@@ -239,8 +249,13 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
             for (const key of selectedKeys) {
                 const { gun, ay, yil: y } = fromKey(key);
                 const d = new Date(y, ay - 1, gun);
+                const tarihStr = `${y}-${String(ay).padStart(2, '0')}-${String(gun).padStart(2, '0')}`;
                 if (d < today) {
                     toast.warning('Geçmişe yönelik izin ekleyemezsiniz.');
+                    return;
+                }
+                if (hasIzinOnDate(tarihStr)) {
+                    toast.warning(`${adSoyad || 'Bu kişi'} için ${formatWarnDate(tarihStr)} tarihine ait zaten izin kaydı bulunuyor.`);
                     return;
                 }
             }
@@ -306,7 +321,7 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
         }
         setActionLoading(false);
         if (ok > 0) {
-            toast.success(`${ok} izin kaydı silindi.`);
+            toast.success(`izin kaydı silindi.`);
             setSelectedKeys(new Set());
             await refreshTakvim();
         }
@@ -575,7 +590,8 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
                                                             const selected = selectedKeys.has(key);
 
                                                             let className = '';
-                                                            if (isWeekend) className += ' weekend';
+                                                            if (!isInMonth) className += ' ay-disi';
+                                                            if (isWeekend && isInMonth) className += ' weekend';
                                                             if (isPast && isInMonth) className += ' gecengri';
                                                             if (isInMonth) className += ' cmtkvm';
                                                             if (selected) className += ' selected';
@@ -585,10 +601,10 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
                                                                 <td
                                                                     key={i}
                                                                     className={className.trim()}
-                                                                    data-gun={gun}
-                                                                    data-ay={ay}
-                                                                    data-yil={dateYil}
-                                                                    onClick={(e) => {
+                                                                    data-gun={isInMonth ? gun : undefined}
+                                                                    data-ay={isInMonth ? ay : undefined}
+                                                                    data-yil={isInMonth ? dateYil : undefined}
+                                                                    onClick={isInMonth ? (e) => {
                                                                         handleCellClick(e, {
                                                                             gun,
                                                                             ay,
@@ -600,14 +616,14 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
                                                                             dateYil,
                                                                             isInMonth
                                                                         );
-                                                                    }}
+                                                                    } : undefined}
                                                                     style={{
                                                                         fontSize: 9,
                                                                         padding: '6px 2px',
-                                                                        cursor: isInMonth ? 'pointer' : 'default',
+                                                                        cursor: isInMonth ? 'pointer' : 'not-allowed',
                                                                     }}
                                                                 >
-                                                                    {isInMonth ? gun : <span>{String(gun).padStart(2, '0')}</span>}
+                                                                    {isInMonth ? gun : ''}
                                                                 </td>
                                                             );
                                                         })}
@@ -665,6 +681,12 @@ export default function IzinTakvimModal({ isOpen, toggle, sicilId, adSoyad, init
                 .izin-takvim-table .cmtkvm { cursor: pointer; }
                 .izin-takvim-table .gecengri { background-color: #e16a6a; color: #333; }
                 .izin-takvim-table .calismavar { background-color: #00ff21; }
+                .izin-takvim-table .ay-disi {
+                    background-color: #b5b5b5 !important;
+                    color: transparent !important;
+                    pointer-events: none;
+                    user-select: none;
+                }
             `,
                     }}
                 />

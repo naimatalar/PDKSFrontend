@@ -40,7 +40,7 @@ export default function MesaiTakvimModal({ isOpen, toggle, sicilId, adSoyad }) {
     useEffect(() => {
         if (!isOpen) return;
         const load = async () => {
-            const pagination = { PageNumber: 1, PageSize: 500 };
+            const pagination = { PageNumber: 0, PageSize: 500 };
             try {
                 const [periyod, grup, birim] = await Promise.all([
                     GetWithToken('MesaiPeriyodlari/GetAll', pagination),

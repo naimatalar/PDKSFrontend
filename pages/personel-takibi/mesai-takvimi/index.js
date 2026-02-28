@@ -107,7 +107,7 @@ export default function MesaiTakvimiIndex() {
 
     const loadOptions = async () => {
         setOptionsLoading(true);
-        const pagination = { PageNumber: 1, PageSize: 500 };
+        const pagination = { PageNumber: 0, PageSize: 500 };
         const fetchOpt = (url) =>
             GetWithToken(url, pagination)
                 .then((r) => r.data?.data?.list || [])
@@ -493,7 +493,7 @@ export default function MesaiTakvimiIndex() {
                                     <DataTable
                                         DataUrl={dataUrl}
                                         Refresh={refreshTable}
-                                        Pagination={{ pageNumber: 1, pageSize: 20 }}
+                                        Pagination={{ PageNumber: 0, pageSize: 20 }}
                                         UseGetPagination
                                         Headers={[
                                             {
