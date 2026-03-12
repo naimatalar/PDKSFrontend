@@ -262,6 +262,10 @@ export default function PuantajIndex() {
                                             placeholder="Personel seçin..."
                                             isClearable
                                             isSearchable
+                                            filterOption={(option, inputValue) => {
+                                                if (!inputValue) return true;
+                                                return option.label.toLowerCase().includes(inputValue.toLowerCase());
+                                            }}
                                         />
                                     </div>
                                     <div className="col-md-2 mb-2">

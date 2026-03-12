@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import AlertFunction from '../../../components/alertfunction';
 import PageLoading from '../../../layout/pageLoading';
 import { GetWithToken, PostWithToken } from '../../api/crud';
 import { confirmAlert } from 'react-confirm-alert';
+import AppModalHeader from '../../../components/AppModalHeader';
 
 const saatiDakikayaCevir = (str) => {
     if (!str || typeof str !== 'string') return 0;
@@ -389,10 +390,10 @@ export default function TatillerIndex() {
             </div>
 
             <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} size="lg">
-                <ModalHeader toggle={() => setModalOpen(false)}>
+                <AppModalHeader toggle={() => setModalOpen(false)}>
                     <i className="icon-edit me-2"></i>
                     Tatil Tipi Düzenle
-                </ModalHeader>
+                </AppModalHeader>
                 <ModalBody>
                     <div className="smart-form">
                         <fieldset>

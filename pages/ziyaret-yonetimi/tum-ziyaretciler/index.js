@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import DataTable from '../../../components/datatable';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import { GetWithToken } from '../../api/crud';
 import { toast } from 'react-toastify';
+import AppModalHeader from '../../../components/AppModalHeader';
 
 const formatTarihSaat = (val) => {
     if (!val) return '-';
@@ -136,7 +137,7 @@ export default function TumZiyaretcilerPage() {
             </div>
 
             <Modal isOpen={detailModalOpen} toggle={handleCloseDetail} size="lg" centered>
-                <ModalHeader toggle={handleCloseDetail}>Ziyaretçi Görüntüle</ModalHeader>
+                <AppModalHeader toggle={handleCloseDetail}>Ziyaretçi Görüntüle</AppModalHeader>
                 <ModalBody>
                     {detailLoading && (
                         <div className="text-center py-4">
