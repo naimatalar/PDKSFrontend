@@ -3,7 +3,8 @@ import Link from 'next/link';
 import Layout from '../../../layout/layout';
 import PageHeader from '../../../layout/pageheader';
 import DataTable from '../../../components/datatable';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
+import AppModalHeader from '../../../components/AppModalHeader';
 import { GetWithToken } from '../../api/crud';
 import { toast } from 'react-toastify';
 
@@ -121,7 +122,7 @@ export default function IcerdekiZiyaretcilerPage() {
             </div>
 
             <Modal isOpen={detailModalOpen} toggle={handleCloseDetail} size="lg" centered>
-                <ModalHeader toggle={handleCloseDetail}>Ziyaretçi Görüntüle</ModalHeader>
+                <AppModalHeader toggle={handleCloseDetail}>Ziyaretçi Görüntüle</AppModalHeader>
                 <ModalBody>
                     {detailLoading && (
                         <div className="text-center py-4">

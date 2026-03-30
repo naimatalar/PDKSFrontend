@@ -1093,6 +1093,7 @@ ${elementsHtml}
                                 ['firmaAd', 'Firma'],
                                 ['bolumAd', 'Bölüm'],
                                 ['pozisyonAd', 'Pozisyon'],
+                                ['yakaAd', 'Yaka'],
                                 ['email', 'E-posta'],
                                 {
                                     header: 'Kart',

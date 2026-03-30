@@ -79,8 +79,13 @@ export default function MonitorIndex() {
         if (!hubConnection) return;
 
         const onAccessEvent = () => {
+            alert("Hub")
             setRefresh(new Date());
         };
+
+        setInterval(() => {
+            setRefresh(new Date());
+        }, 10000);
 
         hubConnection.on('ReceiveAccessEvent', onAccessEvent);
         return () => {

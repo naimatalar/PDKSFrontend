@@ -497,6 +497,12 @@ export default function PlanGerceklesenIndex() {
                                     onChange={(o) => setGorevId(o?.value ?? 0)}
                                     isDisabled={optionsLoading}
                                     isClearable={false}
+                                    styles={{
+                                        menu: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                        }),
+                                    }}
                                 />
                             </div>
                             <div className="col-md-2">
