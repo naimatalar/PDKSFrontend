@@ -159,6 +159,7 @@ export default function SicilIndex() {
     const [terminalGrupList, setTerminalGrupList] = useState([]);
     const [mesaiPeriyodList, setMesaiPeriyodList] = useState([]);
     const [yetkiList, setYetkiList] = useState([]);
+    const [kanGrubuList, setKanGrubuList] = useState([]);
     const cardNoSetFieldRef = useRef(null);
 
     useEffect(() => {
@@ -198,7 +199,7 @@ export default function SicilIndex() {
                 })
                 .catch(() => []);
 
-        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod, yetki] =
+        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod, yetki, kanGrubu] =
             await Promise.all([
                 fetchOptions('CboFirma/GetAll'),
                 fetchOptions('CboBolum/GetAll'),
@@ -211,6 +212,7 @@ export default function SicilIndex() {
                 fetchOptions('TerminalGroup/GetAll'),
                 fetchOptions('MesaiPeriyodlari/GetAll'),
                 fetchYetki(),
+                fetchOptions('CboKanGrubu/GetAll'),
             ]);
 
         setFirmaList(firma.map((x) => ({ id: x.id, text: x.ad || x.Ad })));
@@ -227,6 +229,12 @@ export default function SicilIndex() {
             (yetki || []).map((x) => ({
                 id: x?.id ?? x?.Id,
                 text: x?.aciklama ?? x?.Aciklama ?? '',
+            })).filter((x) => x.id != null)
+        );
+        setKanGrubuList(
+            (kanGrubu || []).map((x) => ({
+                id: x?.id ?? x?.Id,
+                text: x?.ad ?? x?.Ad ?? '',
             })).filter((x) => x.id != null)
         );
 
@@ -268,7 +276,10 @@ export default function SicilIndex() {
                     gorev: v.gorev ? parseInt(v.gorev, 10) : null,
                     yaka: v.yaka ? parseInt(v.yaka, 10) : null,
                     tanim: v.tanim || 'sicil',
-                    kanGrubu: v.kanGrubu || null,
+                    kanGrubu: (() => {
+                        const parsed = parseInt(v.kanGrubu, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     cinsiyet: v.cinsiyet || null,
                     yetkiId: (() => {
                         const parsed = parseInt(v.yetkiId, 10);
@@ -295,7 +306,10 @@ export default function SicilIndex() {
                     gorev: v.gorev ? parseInt(v.gorev) : null,
                     yaka: v.yaka ? parseInt(v.yaka) : null,
                     tanim: v.tanim || 'sicil',
-                    kanGrubu: v.kanGrubu || null,
+                    kanGrubu: (() => {
+                        const parsed = parseInt(v.kanGrubu, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     cinsiyet: v.cinsiyet || null,
                     yetkiId: (() => {
                         const parsed = parseInt(v.yetkiId, 10);
@@ -357,7 +371,11 @@ export default function SicilIndex() {
                     const firstToken = `${yetkiStr}`.split(',').map((x) => x.trim()).find((x) => /^\d+$/.test(x));
                     return firstToken || '';
                 })(),
-                kanGrubu: d.kanGrubu || d.KanGrubu || '',
+                kanGrubu: (() => {
+                    const kg = d.kanGrubu ?? d.KanGrubu;
+                    if (kg == null || kg === '') return '';
+                    return `${kg}`;
+                })(),
                 cinsiyet: d.cinsiyet || d.Cinsiyet || '',
                 girisTarih: formatDate(d.girisTarih),
                 cikisTarih: formatDate(d.cikisTarih),
@@ -703,17 +721,7 @@ ${elementsHtml}
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Kan Grubu</label>
-                                                <Field as="select" name="kanGrubu" className="form-control">
-                                                    <option value="">Seçiniz</option>
-                                                    <option value="A Rh+">A Rh+</option>
-                                                    <option value="A Rh-">A Rh-</option>
-                                                    <option value="B Rh+">B Rh+</option>
-                                                    <option value="B Rh-">B Rh-</option>
-                                                    <option value="AB Rh+">AB Rh+</option>
-                                                    <option value="AB Rh-">AB Rh-</option>
-                                                    <option value="0 Rh+">0 Rh+</option>
-                                                    <option value="0 Rh-">0 Rh-</option>
-                                                </Field>
+                                                <ReactSelectField name="kanGrubu" options={kanGrubuList} value={values.kanGrubu} setFieldValue={setFieldValue} placeholder="Seçiniz" />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Cinsiyet</label>
