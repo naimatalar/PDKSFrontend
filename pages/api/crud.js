@@ -2,7 +2,7 @@ import React from 'react'
 import Axios from 'axios'
 
 
-export const apiConstant = "http://localhost:57022";
+export const apiConstant = "http://10.35.8.110:9512";
 //   export const apiConstant = "https://api.dimforthumb.net";
 
 
