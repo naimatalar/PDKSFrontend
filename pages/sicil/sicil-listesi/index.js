@@ -160,6 +160,7 @@ export default function SicilIndex() {
     const [mesaiPeriyodList, setMesaiPeriyodList] = useState([]);
     const [yetkiList, setYetkiList] = useState([]);
     const [kanGrubuList, setKanGrubuList] = useState([]);
+    const [cinsiyetList, setCinsiyetList] = useState([]);
     const cardNoSetFieldRef = useRef(null);
 
     useEffect(() => {
@@ -199,7 +200,7 @@ export default function SicilIndex() {
                 })
                 .catch(() => []);
 
-        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod, yetki, kanGrubu] =
+        const [firma, bolum, direktorluk, gorev, pozisyon, puantaj, yaka, altFirma, terminalGrup, mesaiPeriyod, yetki, kanGrubu, cinsiyet] =
             await Promise.all([
                 fetchOptions('CboFirma/GetAll'),
                 fetchOptions('CboBolum/GetAll'),
@@ -213,6 +214,7 @@ export default function SicilIndex() {
                 fetchOptions('MesaiPeriyodlari/GetAll'),
                 fetchYetki(),
                 fetchOptions('CboKanGrubu/GetAll'),
+                fetchOptions('CboCinsiyet/GetAll'),
             ]);
 
         setFirmaList(firma.map((x) => ({ id: x.id, text: x.ad || x.Ad })));
@@ -233,6 +235,12 @@ export default function SicilIndex() {
         );
         setKanGrubuList(
             (kanGrubu || []).map((x) => ({
+                id: x?.id ?? x?.Id,
+                text: x?.ad ?? x?.Ad ?? '',
+            })).filter((x) => x.id != null)
+        );
+        setCinsiyetList(
+            (cinsiyet || []).map((x) => ({
                 id: x?.id ?? x?.Id,
                 text: x?.ad ?? x?.Ad ?? '',
             })).filter((x) => x.id != null)
@@ -280,7 +288,10 @@ export default function SicilIndex() {
                         const parsed = parseInt(v.kanGrubu, 10);
                         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
                     })(),
-                    cinsiyet: v.cinsiyet || null,
+                    cinsiyet: (() => {
+                        const parsed = parseInt(v.cinsiyet, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     yetkiId: (() => {
                         const parsed = parseInt(v.yetkiId, 10);
                         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
@@ -310,7 +321,10 @@ export default function SicilIndex() {
                         const parsed = parseInt(v.kanGrubu, 10);
                         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
                     })(),
-                    cinsiyet: v.cinsiyet || null,
+                    cinsiyet: (() => {
+                        const parsed = parseInt(v.cinsiyet, 10);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+                    })(),
                     yetkiId: (() => {
                         const parsed = parseInt(v.yetkiId, 10);
                         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
@@ -376,7 +390,11 @@ export default function SicilIndex() {
                     if (kg == null || kg === '') return '';
                     return `${kg}`;
                 })(),
-                cinsiyet: d.cinsiyet || d.Cinsiyet || '',
+                cinsiyet: (() => {
+                    const c = d.cinsiyet ?? d.Cinsiyet;
+                    if (c == null || c === '') return '';
+                    return `${c}`;
+                })(),
                 girisTarih: formatDate(d.girisTarih),
                 cikisTarih: formatDate(d.cikisTarih),
             });
@@ -725,11 +743,7 @@ ${elementsHtml}
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Cinsiyet</label>
-                                                <Field as="select" name="cinsiyet" className="form-control">
-                                                    <option value="">Seçiniz</option>
-                                                    <option value="E">Erkek</option>
-                                                    <option value="K">Kadın</option>
-                                                </Field>
+                                                <ReactSelectField name="cinsiyet" options={cinsiyetList} value={values.cinsiyet} setFieldValue={setFieldValue} placeholder="Seçiniz" />
                                             </div>
                                         </div>
                                     </div>
